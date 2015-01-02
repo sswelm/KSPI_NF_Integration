@@ -231,7 +231,7 @@ namespace FNPlugin {
 			} else if (refbody == REF_BODY_DRES) {
 				multiplier = 7.5f;
 			} else if (refbody == REF_BODY_KERBIN) {
-				multiplier = 1f;
+				multiplier = 2f;
 			} else if (refbody == REF_BODY_KERBOL) {
 				multiplier = 15f;
 			}else {
@@ -239,13 +239,14 @@ namespace FNPlugin {
 			}
 
 			if (landed) {
-				if (refbody == REF_BODY_TYLO) {
-					multiplier = multiplier*3f;
-				} else if (refbody == REF_BODY_EVE) {
-					multiplier = multiplier*2.5f;
-				} else {
-					multiplier = multiplier*2f;
-				}
+				if (refbody == REF_BODY_TYLO)
+                    multiplier = multiplier * 3f;
+                else if (refbody == REF_BODY_KERBIN) 
+                    multiplier = multiplier * 0.5f;         
+                else if (refbody == REF_BODY_EVE) 
+                    multiplier = multiplier * 2.5f;
+                else 
+                    multiplier = multiplier * 2f;
 			}
 
             return multiplier;
