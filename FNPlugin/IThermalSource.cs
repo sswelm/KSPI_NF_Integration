@@ -11,8 +11,6 @@ namespace FNPlugin{
 
         float CoreTemperature { get; }
 
-        bool IsSelfContained { get; }
-
         bool IsActive { get; }
 
         bool IsVolatileSource { get; }
