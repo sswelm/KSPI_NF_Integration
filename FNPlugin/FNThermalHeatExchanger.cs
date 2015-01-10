@@ -23,7 +23,6 @@ namespace FNPlugin  {
 		protected float _thermalpower;
 
         //properties
-        public bool IsSelfContained { get { return false; } }
 
         public float CoreTemperature { get { return 1500; } }
 

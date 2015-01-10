@@ -1,4 +1,6 @@
-using OpenResourceSystem;
+extern alias ORSv1_4_3;
+using ORSv1_4_3::OpenResourceSystem;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +52,7 @@ namespace FNPlugin{
 		protected float minISP;
 		protected float assThermalPower;
 		protected float powerRatio = 0.358f;
-		//protected float engineMaxThrust;
+		protected float engineMaxThrust;
 		protected bool isLFO = false;
 		protected float ispMultiplier = 1;
 		protected ConfigNode[] propellants;
@@ -72,7 +74,7 @@ namespace FNPlugin{
 
 		//Constants
 		protected const double g0 = 9.82;
-        protected const double isp_temp_rat = 20; //22.371670613;
+        protected const double isp_temp_rat = 22.371670613;
 
 		//Static
 		static Dictionary<string, double> intake_amounts = new Dictionary<string, double>();
@@ -113,18 +115,13 @@ namespace FNPlugin{
 			return propellants;
 		}
 
-        public void OnEditorAttach() 
-        {
-            foreach (AttachNode attach_node in part.attachNodes)
-            {
-                if (attach_node.attachedPart != null)
-                {
+        public void OnEditorAttach() {
+            foreach (AttachNode attach_node in part.attachNodes) {
+                if (attach_node.attachedPart != null) {
                     List<IThermalSource> sources = attach_node.attachedPart.FindModulesImplementing<IThermalSource>();
-                    if (sources.Count > 0)
-                    {
+                    if (sources.Count > 0) {
                         myAttachedReactor = sources.First();
-                        if (myAttachedReactor != null)
-                        {
+                        if (myAttachedReactor != null) {
                             break;
                         }
                     }
@@ -133,33 +130,17 @@ namespace FNPlugin{
             estimateEditorPerformance();
         }
 
-		public override void OnStart(PartModule.StartState state) 
-        {
+		public override void OnStart(PartModule.StartState state) {
             engineType = originalName;
-
             myAttachedEngine = this.part.Modules["ModuleEngines"] as ModuleEngines;
-            
-            if (state != StartState.Editor && part.attachNodes != null && part.attachNodes.Any(node => node.attachedPart != null))
-            {
-                // first try to connect to local IThermalSource
-                myAttachedReactor = this.part.FindModulesImplementing<IThermalSource>().FirstOrDefault();
-            }
-
-            if (myAttachedReactor == null)
-            {
-                // find attached thermal source
-                foreach (AttachNode attach_node in part.attachNodes)
-                {
-                    if (attach_node.attachedPart != null)
-                    {
-                        List<IThermalSource> sources = attach_node.attachedPart.FindModulesImplementing<IThermalSource>();
-                        if (sources.Count > 0)
-                        {
-                            myAttachedReactor = sources.First();
-                            if (myAttachedReactor != null)
-                            {
-                                break;
-                            }
+            // find attached thermal source
+            foreach (AttachNode attach_node in part.attachNodes) {
+                if (attach_node.attachedPart != null) {
+                    List<IThermalSource> sources = attach_node.attachedPart.FindModulesImplementing<IThermalSource>();
+                    if (sources.Count > 0) {
+                        myAttachedReactor = sources.First();
+                        if (myAttachedReactor != null) {
+                            break;
                         }
                     }
                 }
@@ -212,13 +193,11 @@ namespace FNPlugin{
 			}
 			Fields["upgradeCostStr"].guiActive = !isupgraded  && hasrequiredupgrade && isJet;
 
-			if (myAttachedEngine != null) 
-            {
-                if (myAttachedEngine.isOperational && !IsEnabled)
-                {
-                    IsEnabled = true;
-                    part.force_activate();
-                }
+			if (myAttachedEngine != null) {
+				if (myAttachedEngine.isOperational && !IsEnabled) {
+					IsEnabled = true;
+					part.force_activate ();
+				}
 				updatePropellantBar ();
 			}
 		}
@@ -345,14 +324,14 @@ namespace FNPlugin{
 						maxISP = maxISP / 2.5f;
 					}
 				}
-                newISP.Add(0, Mathf.Min(maxISP * 4.0f / 5.0f, 4000.0f));
-                newISP.Add(0.15f, Mathf.Min(maxISP, 4000.0f));
-                newISP.Add(0.3f, Mathf.Min(maxISP * 4.0f / 5.0f, 4000.0f));
-                newISP.Add(1, Mathf.Min(maxISP * 2.0f / 3.0f, 4000.0f));
+                newISP.Add(0, Mathf.Min(maxISP * 4.0f / 5.0f, 2997.13f));
+                newISP.Add(0.15f, Mathf.Min(maxISP, 2997.13f));
+                newISP.Add(0.3f, Mathf.Min(maxISP * 4.0f / 5.0f, 2997.13f));
+                newISP.Add(1, Mathf.Min(maxISP * 2.0f / 3.0f, 2997.13f));
 				vCurve.Add(0, 1.0f);
 				vCurve.Add((float)(maxISP*g0*1.0/3.0), 1.0f);
 				vCurve.Add((float)(maxISP*g0), 1.0f);
-				vCurve.Add ((float)(maxISP*g0*4.0/3.0), 0);  
+				vCurve.Add ((float)(maxISP*g0*4.0/3.0), 0);
 				myAttachedEngine.useVelocityCurve = true;
 				myAttachedEngine.useEngineResponseTime = true;
 				myAttachedEngine.ignitionThreshold = 0.01f;
@@ -361,10 +340,9 @@ namespace FNPlugin{
 			myAttachedEngine.atmosphereCurve = newISP;
 			myAttachedEngine.velocityCurve = vCurve;
 			assThermalPower = myAttachedReactor.MaximumPower;
-
-            //if (myAttachedReactor is InterstellarFusionReactor) {
-            //    assThermalPower = assThermalPower * 0.95f;
-            //}
+            if (myAttachedReactor is InterstellarFusionReactor) {
+                assThermalPower = assThermalPower * 0.95f;
+            }
 		}
 
 		public float getAtmosphericLimit() {
@@ -410,12 +388,7 @@ namespace FNPlugin{
                 minISP = maxISP * 0.4f;
                 atmospherecurve.Add(0, maxISP, 0, 0);
                 atmospherecurve.Add(1, minISP, 0, 0);
-
-                double heatTrustModifier = myAttachedReactor.CoreTemperature < 1600
-                    ? (myAttachedReactor.CoreTemperature + 400.0) / 2000.0
-                    : 1.0 + (myAttachedReactor.CoreTemperature - 1600.0) / 16000.0;
-
-                thrust = (float)(myAttachedReactor.MaximumPower * heatTrustModifier * 15000.0 / maxISP);
+                thrust = (float)(2 * myAttachedReactor.MaximumPower * 1000 / g0 / maxISP);
                 myAttachedEngine.maxThrust = thrust;
                 myAttachedEngine.atmosphereCurve = atmospherecurve;
             } else {
@@ -448,9 +421,8 @@ namespace FNPlugin{
 				}
 				// get the flameout safety limit
 				atmospheric_limit = getAtmosphericLimit ();
-                double thrust_limit = myAttachedEngine.thrustPercentage / 100.0;
-                if (currentpropellant_is_jet) 
-                {
+                double thrust_limit = myAttachedEngine.thrustPercentage / 100;
+                if (currentpropellant_is_jet) {
                     int pre_coolers_active = vessel.FindPartModulesImplementing<FNModulePreecooler>().Where(prc => prc.isFunctional()).Count();
                     int intakes_open = vessel.FindPartModulesImplementing<ModuleResourceIntake>().Where(mre => mre.intakeEnabled).Count();
                     double proportion = Math.Pow((double)(intakes_open - pre_coolers_active) / (double)intakes_open, 0.1);
@@ -473,39 +445,29 @@ namespace FNPlugin{
                 }
                 double thermal_consume_total = assThermalPower * TimeWarp.fixedDeltaTime * myAttachedEngine.currentThrottle * atmospheric_limit;
                 double thermal_power_received = consumeFNResource(thermal_consume_total, FNResourceManager.FNRESOURCE_THERMALPOWER) / TimeWarp.fixedDeltaTime;
-                
-                if (thermal_power_received * TimeWarp.fixedDeltaTime < thermal_consume_total) 
-                {
+                if (thermal_power_received * TimeWarp.fixedDeltaTime < thermal_consume_total) {
                     thermal_power_received += consumeFNResource(thermal_consume_total-thermal_power_received*TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_CHARGED_PARTICLES) / TimeWarp.fixedDeltaTime;
                 }
-
 				consumeFNResource (thermal_power_received * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_WASTEHEAT);
 				float power_ratio = 0.0f;
 				double engineMaxThrust = 0.01;
-
-				if (assThermalPower > 0) 
-                {
+				if (assThermalPower > 0) {
 					power_ratio = (float)(thermal_power_received / assThermalPower);
-                    double heatTrustModifier = myAttachedReactor.CoreTemperature < 1600 
-                        ? (myAttachedReactor.CoreTemperature + 400.0) / 2000.0 
-                        : 1.0 + (myAttachedReactor.CoreTemperature - 1600.0) / 16000.0;
-
-                    engineMaxThrust = Math.Max(thrust_limit * 15000.0 * heatTrustModifier * thermal_power_received / maxISP / heat_exchanger_thrust_divisor * ispratio / myAttachedEngine.currentThrottle, 0.01);
+					engineMaxThrust = Math.Max(thrust_limit*2000.0 * thermal_power_received / maxISP / g0 * heat_exchanger_thrust_divisor*ispratio/myAttachedEngine.currentThrottle,0.01);
 				} 
 				//print ("B: " + engineMaxThrust);
 				// set up TWR limiter if on
                 //double additional_thrust_compensator = myAttachedEngine.finalThrust / (myAttachedEngine.maxThrust * myAttachedEngine.currentThrottle)/ispratio;
-				double engine_thrust = engineMaxThrust/myAttachedEngine.thrustPercentage*100.0;
+				double engine_thrust = engineMaxThrust/myAttachedEngine.thrustPercentage*100;
 				// engine thrust fixed
 				//print ("A: " + engine_thrust*myAttachedEngine.velocityCurve.Evaluate((float)vessel.srf_velocity.magnitude));
-                if (!double.IsInfinity(engine_thrust) && !double.IsNaN(engine_thrust)) 
-                {
-                    if (isLFO) 
-                        myAttachedEngine.maxThrust = (float)(1.5 * engine_thrust);
-                    else 
+                if (!double.IsInfinity(engine_thrust) && !double.IsNaN(engine_thrust)) {
+                    if (isLFO) {
+                        myAttachedEngine.maxThrust = (float)(2.2222 * engine_thrust);
+                    } else {
                         myAttachedEngine.maxThrust = (float)engine_thrust;
-                } 
-                else {
+                    }
+                } else {
                     myAttachedEngine.maxThrust = 0.000001f;
                 }
 								

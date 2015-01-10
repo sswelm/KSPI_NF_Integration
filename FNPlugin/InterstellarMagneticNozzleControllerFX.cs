@@ -1,4 +1,6 @@
-using OpenResourceSystem;
+extern alias ORSv1_4_3;
+using ORSv1_4_3::OpenResourceSystem;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,7 +78,7 @@ namespace FNPlugin{
                 if (max_power > 0)
                 {
                     power_ratio = (float)(charged_power_received / max_power);
-                    engineMaxThrust = Math.Max(20000.0 * charged_power_received*megajoules_ratio*atmo_thrust_factor*exchanger_thrust_divisor / isp / _attached_engine.currentThrottle, 0.000000001);
+                    engineMaxThrust = Math.Max(2000.0 * charged_power_received*megajoules_ratio*atmo_thrust_factor*exchanger_thrust_divisor / isp / GameConstants.STANDARD_GRAVITY / _attached_engine.currentThrottle, 0.000000001);
                 }
 
                 if (!double.IsInfinity(engineMaxThrust) && !double.IsNaN(engineMaxThrust))
