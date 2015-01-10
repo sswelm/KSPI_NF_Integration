@@ -71,6 +71,30 @@ namespace FNPlugin
             get { return _ispCoreTempMult; }
         }
 
+        protected static double _lowCoreTempBaseTrust = 0;
+        public static double LowCoreTempBaseTrust
+        {
+            get { return _lowCoreTempBaseTrust; }
+        }
+
+        protected static double _highCoreTempTrustDivider = GameConstants.HighCoreTemperatureTrustDivider;
+        public static double HighCoreTempTrustDivider
+        {
+            get { return _highCoreTempTrustDivider; }
+        }
+
+        protected static double _trustCoreTempThreshold = 0;
+        public static double TrustCoreTempThreshold
+        {
+            get { return _trustCoreTempThreshold; }
+        }
+
+        protected static double _trustMaxPowerMult = GameConstants.TrustMaximumPowerMultiplier;
+        public static double TrustMaxPowerMult
+        {
+            get { return _trustMaxPowerMult;}
+        }
+
         protected static bool _isPanelHeatingClamped = false;
         public static bool IsSolarPanelHeatingClamped
         {
@@ -447,6 +471,26 @@ namespace FNPlugin
                     {
                         PluginHelper._ispCoreTempMult = double.Parse(plugin_settings.GetValue("IspCoreTempMult"));
                         Debug.Log("[KSP Interstellar] Isp core temperature multiplier set to: " + PluginHelper.IspCoreTempMult.ToString("0.000000"));
+                    }
+                    if (plugin_settings.HasValue("TrustMaxPowerMult"))
+                    {
+                        PluginHelper._trustMaxPowerMult = double.Parse(plugin_settings.GetValue("TrustMaxPowerMult"));
+                        Debug.Log("[KSP Interstellar] Maximum PowerTrust Multiplier set to: " + PluginHelper.TrustMaxPowerMult.ToString("0.0"));
+                    }
+                    if (plugin_settings.HasValue("TrustCoreTempThreshold"))
+                    {
+                        PluginHelper._trustCoreTempThreshold = double.Parse(plugin_settings.GetValue("TrustCoreTempThreshold"));
+                        Debug.Log("[KSP Interstellar] Trust core temperature threshold set to: " + PluginHelper.TrustCoreTempThreshold.ToString("0.0"));
+                    }
+                    if (plugin_settings.HasValue("LowCoreTempBaseTrust"))
+                    {
+                        PluginHelper._lowCoreTempBaseTrust = double.Parse(plugin_settings.GetValue("LowCoreTempBaseTrust"));
+                        Debug.Log("[KSP Interstellar] Low core temperature base trust modifier set to: " + PluginHelper.LowCoreTempBaseTrust.ToString("0.0"));
+                    }
+                    if (plugin_settings.HasValue("HighCoreTempTrustDivider"))
+                    {
+                        PluginHelper._highCoreTempTrustDivider = double.Parse(plugin_settings.GetValue("HighCoreTempTrustDivider"));
+                        Debug.Log("[KSP Interstellar] High core temperature trust divider set to: " + PluginHelper.HighCoreTempTrustDivider.ToString("0.0"));
                     }
 
                     resources_configured = true;
