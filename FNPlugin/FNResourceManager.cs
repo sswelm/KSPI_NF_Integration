@@ -22,8 +22,7 @@ namespace FNPlugin {
                 flow_type = FNRESOURCE_FLOWTYPE_EVEN;
             }
 
-            if (String.Equals(this.resource_name, FNResourceManager.FNRESOURCE_WASTEHEAT) && 
-                !PluginHelper.isThermalDissipationDisabled()) 
+            if (String.Equals(this.resource_name, FNResourceManager.FNRESOURCE_WASTEHEAT) && !PluginHelper.IsThermalDissipationDisabled) 
             {   // passive dissip of waste heat - a little bit of this
                 double vessel_mass = my_vessel.GetTotalMass();
                 double passive_dissip = passive_temp_p4 * GameConstants.stefan_const * vessel_mass * 2.0;

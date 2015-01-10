@@ -74,9 +74,7 @@ namespace FNPlugin{
 
         //Config settings settings
         protected double g0 = PluginHelper.GravityConstant;
-
-		//Constants
-        protected const double isp_temp_rat = 22.371670613;
+        protected double isp_temp_rat = PluginHelper.IspCoreTempMult;
 
 		//Static
 		static Dictionary<string, double> intake_amounts = new Dictionary<string, double>();

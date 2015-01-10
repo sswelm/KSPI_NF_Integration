@@ -49,9 +49,9 @@ namespace FNPlugin {
                     solarPanel.powerCurve = satcurve;
 
                     float solar_rate = solarPanel.flowRate * TimeWarp.fixedDeltaTime;
-                    float clamper = PluginHelper.isSolarPanelHeatingClamped() ?
-                        (float)Math.Min(Math.Max((Math.Sqrt(inv_square_mult) - 1.5), 0.0), 1.0) :
-                        1.0f;
+                    float clamper = PluginHelper.IsSolarPanelHeatingClamped 
+                        ? (float)Math.Min(Math.Max((Math.Sqrt(inv_square_mult) - 1.5), 0.0), 1.0) 
+                        : 1.0f;
                     float heat_rate =  clamper * solar_rate * 0.5f / 1000.0f;
 
                     if (getResourceBarRatio(FNResourceManager.FNRESOURCE_WASTEHEAT) >= 0.98 && solarPanel.panelState == ModuleDeployableSolarPanel.panelStates.EXTENDED && solarPanel.sunTracking)

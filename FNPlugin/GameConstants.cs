@@ -64,5 +64,6 @@ namespace FNPlugin {
         public const double ELECTRON_CHARGE = 1.602176565e-19;
         public const double ATOMIC_MASS_UNIT =  1.660538921e-27;
         public const double STANDARD_GRAVITY = 9.80665;
+        public const double IspCoreTemperatureMultiplier = 22.371670613;
     }
 }

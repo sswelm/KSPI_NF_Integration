@@ -30,55 +30,66 @@ namespace FNPlugin
         public const int REF_BODY_EELOO = 16;
 
         public static bool using_toolbar = false;
-
         public const int interstellar_major_version = 13;
         public const int interstellar_minor_version = 5;
 
         protected static bool plugin_init = false;
-
-        protected static bool is_thermal_dissip_disabled = false;
-        protected static bool is_panel_heating_clamped = false;
-        protected static bool is_reciever_temp_tweaked = false;
-
-        protected static double gravityConstant = GameConstants.STANDARD_GRAVITY; //9.81;
-
         protected static GameDatabase gdb;
         protected static bool resources_configured = false;
 
-        public static bool TechnologyIsInUse { get { return (HighLogic.CurrentGame.Mode == Game.Modes.CAREER || HighLogic.CurrentGame.Mode == Game.Modes.SCIENCE_SANDBOX); } }
+        #region Static Properties
 
-        // Note: this doesn't seem like an existing file
-        public static ConfigNode PluginSettingsConfig { get { return GameDatabase.Instance.GetConfigNode("WarpPlugin/WarpPluginSettings/WarpPluginSettings"); } }
-
-        public static string getPluginSaveFilePath()
-        {
-            return KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/WarpPlugin.cfg";
+        public static bool TechnologyIsInUse 
+        { 
+            get { return (HighLogic.CurrentGame.Mode == Game.Modes.CAREER || HighLogic.CurrentGame.Mode == Game.Modes.SCIENCE_SANDBOX); } 
         }
 
-        public static string getPluginSettingsFilePath()
-        {
-            return KSPUtil.ApplicationRootPath + "GameData/WarpPlugin/WarpPluginSettings.cfg";
+        public static ConfigNode PluginSettingsConfig 
+        { 
+            get { return GameDatabase.Instance.GetConfigNode("WarpPlugin/WarpPluginSettings/WarpPluginSettings"); } 
         }
 
-        public static bool isThermalDissipationDisabled()
+        public static string PluginSaveFilePath
         {
-            return is_thermal_dissip_disabled;
+            get { return KSPUtil.ApplicationRootPath + "saves/" + HighLogic.SaveFolder + "/WarpPlugin.cfg"; }
         }
 
+        public static string PluginSettingsFilePath
+        {
+            get {  return KSPUtil.ApplicationRootPath + "GameData/WarpPlugin/WarpPluginSettings.cfg"; }
+        }
+
+        protected static double _gravityConstant = GameConstants.STANDARD_GRAVITY; 
         public static double GravityConstant
         {
-            get { return gravityConstant; }
+            get { return _gravityConstant; }
         }
 
-        public static bool isSolarPanelHeatingClamped()
+        protected static double _ispCoreTempMult = GameConstants.IspCoreTemperatureMultiplier;
+        public static double IspCoreTempMult
         {
-            return is_panel_heating_clamped;
+            get { return _ispCoreTempMult; }
         }
 
-        public static bool isRecieverCoreTempTweaked()
+        protected static bool _isPanelHeatingClamped = false;
+        public static bool IsSolarPanelHeatingClamped
         {
-            return is_reciever_temp_tweaked;
+            get { return _isPanelHeatingClamped; }
         }
+
+        protected static bool _isThermalDissipationDisabled = false;
+        public static bool IsThermalDissipationDisabled
+        {
+            get { return _isThermalDissipationDisabled; }
+        }
+
+        protected static bool _isRecieverTempTweaked = false;
+        public static bool IsRecieverCoreTempTweaked
+        {
+            get { return _isRecieverTempTweaked; }
+        }
+
+        #endregion
 
         public static bool hasTech(string techid)
         {
@@ -200,19 +211,19 @@ namespace FNPlugin
 
         public static ConfigNode getPluginSaveFile()
         {
-            ConfigNode config = ConfigNode.Load(PluginHelper.getPluginSaveFilePath());
+            ConfigNode config = ConfigNode.Load(PluginHelper.PluginSaveFilePath);
             if (config == null)
             {
                 config = new ConfigNode();
                 config.AddValue("writtenat", DateTime.Now.ToString());
-                config.Save(PluginHelper.getPluginSaveFilePath());
+                config.Save(PluginHelper.PluginSaveFilePath);
             }
             return config;
         }
 
         public static ConfigNode getPluginSettingsFile()
         {
-            ConfigNode config = ConfigNode.Load(PluginHelper.getPluginSettingsFilePath());
+            ConfigNode config = ConfigNode.Load(PluginHelper.PluginSettingsFilePath);
             if (config == null)
             {
                 config = new ConfigNode();
@@ -414,24 +425,30 @@ namespace FNPlugin
                 {
                     if (plugin_settings.HasValue("ThermalMechanicsDisabled"))
                     {
-                        PluginHelper.is_thermal_dissip_disabled = bool.Parse(plugin_settings.GetValue("ThermalMechanicsDisabled"));
-                        Debug.Log("[KSP Interstellar] ThermalMechanics set to : " + (!PluginHelper.is_thermal_dissip_disabled).ToString());
+                        PluginHelper._isThermalDissipationDisabled = bool.Parse(plugin_settings.GetValue("ThermalMechanicsDisabled"));
+                        Debug.Log("[KSP Interstellar] ThermalMechanics set to : " + (!PluginHelper.IsThermalDissipationDisabled).ToString());
                     }
                     if (plugin_settings.HasValue("SolarPanelClampedHeating"))
                     {
-                        PluginHelper.is_panel_heating_clamped = bool.Parse(plugin_settings.GetValue("SolarPanelClampedHeating"));
-                        Debug.Log("[KSP Interstellar] Solar panels clamped heating set to enabled: " + PluginHelper.is_panel_heating_clamped.ToString());
+                        PluginHelper._isPanelHeatingClamped = bool.Parse(plugin_settings.GetValue("SolarPanelClampedHeating"));
+                        Debug.Log("[KSP Interstellar] Solar panels clamped heating set to enabled: " + PluginHelper.IsSolarPanelHeatingClamped.ToString());
                     }
                     if (plugin_settings.HasValue("RecieverTempTweak"))
                     {
-                        PluginHelper.is_reciever_temp_tweaked = bool.Parse(plugin_settings.GetValue("RecieverTempTweak"));
-                        Debug.Log("[KSP Interstellar] Microwave reciever CoreTemp tweak is set to enabled: " + PluginHelper.is_reciever_temp_tweaked.ToString());
+                        PluginHelper._isRecieverTempTweaked = bool.Parse(plugin_settings.GetValue("RecieverTempTweak"));
+                        Debug.Log("[KSP Interstellar] Microwave reciever CoreTemp tweak is set to enabled: " + PluginHelper.IsRecieverCoreTempTweaked.ToString());
                     }
                     if (plugin_settings.HasValue("GravityConstant"))
                     {
-                        PluginHelper.gravityConstant = double.Parse(plugin_settings.GetValue("GravityConstant"));
-                        Debug.Log("[KSP Interstellar] Gravity constant is set to: " + PluginHelper.gravityConstant.ToString("0.0000"));
+                        PluginHelper._gravityConstant = double.Parse(plugin_settings.GetValue("GravityConstant"));
+                        Debug.Log("[KSP Interstellar] Gravity constant set to: " + PluginHelper.GravityConstant.ToString("0.000000"));
                     }
+                    if (plugin_settings.HasValue("IspCoreTempMult"))
+                    {
+                        PluginHelper._ispCoreTempMult = double.Parse(plugin_settings.GetValue("IspCoreTempMult"));
+                        Debug.Log("[KSP Interstellar] Isp core temperature multiplier set to: " + PluginHelper.IspCoreTempMult.ToString("0.000000"));
+                    }
+
                     resources_configured = true;
                 }
                 else
