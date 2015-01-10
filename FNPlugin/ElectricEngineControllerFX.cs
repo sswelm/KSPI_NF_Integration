@@ -54,6 +54,9 @@ namespace FNPlugin
 
         public String UpgradeTechnology { get { return upgradeTechReq; } }
 
+        //Config settings settings
+        protected double g0 = PluginHelper.GravityConstant;
+
         // internal
         protected List<ElectricEnginePropellant> _propellants;
         protected ElectricEnginePropellant _current_propellant;
@@ -218,7 +221,7 @@ namespace FNPlugin
                     int engine_count = Math.Max(vessel.FindPartModulesImplementing<ElectricEngineControllerFX>().Count(ee => ee.IsOperational),1); // max of operational electric engines and 1
                     double total_max_thrust = evaluateMaxThrust();
                     double thrust_per_engine = total_max_thrust / (double)engine_count;
-                    double power_per_engine = Math.Min(0.5 * _attached_engine.currentThrottle * thrust_per_engine * _current_propellant.IspMultiplier * baseISP / 1000.0 * 9.81, maxPower * _current_propellant.Efficiency);
+                    double power_per_engine = Math.Min(0.5 * _attached_engine.currentThrottle * thrust_per_engine * _current_propellant.IspMultiplier * baseISP / 1000.0 * g0, maxPower * _current_propellant.Efficiency);
                     double power_received = consumeFNResource(power_per_engine * TimeWarp.fixedDeltaTime / _current_propellant.Efficiency, FNResourceManager.FNRESOURCE_MEGAJOULES) / TimeWarp.fixedDeltaTime;
                     double heat_to_produce = power_received * (1.0 - _current_propellant.Efficiency);
                     double heat_production = supplyFNResource(heat_to_produce * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_WASTEHEAT) / TimeWarp.fixedDeltaTime;
@@ -227,7 +230,7 @@ namespace FNPlugin
                     _heat_production_f = (float)heat_production;
                     // thrust values
                     double thrust_ratio = power_per_engine > 0 ? Math.Min(power_received / power_per_engine, 1.0) : 1;
-                    double actual_max_thrust = _current_propellant.Efficiency * 2000.0f * power_received / (_current_propellant.IspMultiplier * baseISP * 9.81f * _attached_engine.currentThrottle);
+                    double actual_max_thrust = _current_propellant.Efficiency * 2000.0f * power_received / (_current_propellant.IspMultiplier * baseISP * g0 * _attached_engine.currentThrottle);
 
                     if (_attached_engine.currentThrottle > 0)
                     {
@@ -279,7 +282,7 @@ namespace FNPlugin
         {
             List<ElectricEnginePropellant> props = getPropellants();
             string return_str = "Max Power Consumption: " + maxPower.ToString("") + " MW\n";
-            double thrust_per_mw = 2e6 / 9.81 / baseISP / 1000.0;
+            double thrust_per_mw = 2e6 / g0 / baseISP / 1000.0;
             props.ForEach(prop =>
             {
                 double ispProp = baseISP * prop.IspMultiplier;
@@ -310,7 +313,7 @@ namespace FNPlugin
             if (_current_propellant != null)
             {
                 double total_power_output = getStableResourceSupply(FNResourceManager.FNRESOURCE_MEGAJOULES);
-                double final_thrust_store = _current_propellant.Efficiency * 2000.0 * total_power_output / (baseISP * _current_propellant.IspMultiplier * 9.81f);
+                double final_thrust_store = _current_propellant.Efficiency * 2000.0 * total_power_output / (baseISP * _current_propellant.IspMultiplier * g0);
                 return final_thrust_store;
             } 
             return 0;

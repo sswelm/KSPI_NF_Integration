@@ -72,8 +72,8 @@ namespace FNPlugin{
         protected float atmospheric_limit;
         protected float old_atmospheric_limit;
 
-		//Constants
-		protected const double g0 = 9.82;
+		//Config settings settings
+        protected double g0 = PluginHelper.GravityConstant;
         protected const double isp_temp_rat = 22.371670613;
 
 		//Static

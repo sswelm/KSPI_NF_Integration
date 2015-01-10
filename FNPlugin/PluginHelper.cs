@@ -35,14 +35,19 @@ namespace FNPlugin
         public const int interstellar_minor_version = 5;
 
         protected static bool plugin_init = false;
+
         protected static bool is_thermal_dissip_disabled = false;
         protected static bool is_panel_heating_clamped = false;
         protected static bool is_reciever_temp_tweaked = false;
+
+        protected static double gravityConstant = GameConstants.STANDARD_GRAVITY; //9.81;
+
         protected static GameDatabase gdb;
         protected static bool resources_configured = false;
 
         public static bool TechnologyIsInUse { get { return (HighLogic.CurrentGame.Mode == Game.Modes.CAREER || HighLogic.CurrentGame.Mode == Game.Modes.SCIENCE_SANDBOX); } }
 
+        // Note: this doesn't seem like an existing file
         public static ConfigNode PluginSettingsConfig { get { return GameDatabase.Instance.GetConfigNode("WarpPlugin/WarpPluginSettings/WarpPluginSettings"); } }
 
         public static string getPluginSaveFilePath()
@@ -58,6 +63,11 @@ namespace FNPlugin
         public static bool isThermalDissipationDisabled()
         {
             return is_thermal_dissip_disabled;
+        }
+
+        public static double GravityConstant
+        {
+            get { return gravityConstant; }
         }
 
         public static bool isSolarPanelHeatingClamped()
@@ -398,26 +408,29 @@ namespace FNPlugin
 
             if (!resources_configured)
             {
+                // read WarpPluginSettings.cfg 
                 ConfigNode plugin_settings = GameDatabase.Instance.GetConfigNode("WarpPlugin/WarpPluginSettings/WarpPluginSettings");
                 if (plugin_settings != null)
                 {
                     if (plugin_settings.HasValue("ThermalMechanicsDisabled"))
                     {
                         PluginHelper.is_thermal_dissip_disabled = bool.Parse(plugin_settings.GetValue("ThermalMechanicsDisabled"));
-                        Debug.Log("[KSP Interstellar] ThermalMechanics set to : " + 
-                            (!PluginHelper.is_thermal_dissip_disabled).ToString());
+                        Debug.Log("[KSP Interstellar] ThermalMechanics set to : " + (!PluginHelper.is_thermal_dissip_disabled).ToString());
                     }
                     if (plugin_settings.HasValue("SolarPanelClampedHeating"))
                     {
                         PluginHelper.is_panel_heating_clamped = bool.Parse(plugin_settings.GetValue("SolarPanelClampedHeating"));
-                        Debug.Log("[KSP Interstellar] Solar panels clamped heating set to enabled: " + 
-                                    PluginHelper.is_panel_heating_clamped.ToString());
+                        Debug.Log("[KSP Interstellar] Solar panels clamped heating set to enabled: " + PluginHelper.is_panel_heating_clamped.ToString());
                     }
                     if (plugin_settings.HasValue("RecieverTempTweak"))
                     {
                         PluginHelper.is_reciever_temp_tweaked = bool.Parse(plugin_settings.GetValue("RecieverTempTweak"));
-                        Debug.Log("[KSP Interstellar] Microwave reciever CoreTemp tweak is set to enabled: " +
-                                    PluginHelper.is_reciever_temp_tweaked.ToString());
+                        Debug.Log("[KSP Interstellar] Microwave reciever CoreTemp tweak is set to enabled: " + PluginHelper.is_reciever_temp_tweaked.ToString());
+                    }
+                    if (plugin_settings.HasValue("GravityConstant"))
+                    {
+                        PluginHelper.gravityConstant = double.Parse(plugin_settings.GetValue("GravityConstant"));
+                        Debug.Log("[KSP Interstellar] Gravity constant is set to: " + PluginHelper.gravityConstant.ToString("0.0000"));
                     }
                     resources_configured = true;
                 }
