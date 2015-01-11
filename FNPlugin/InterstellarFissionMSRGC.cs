@@ -95,7 +95,7 @@ namespace FNPlugin {
                 }
                 catch (Exception error)
                 {
-                    UnityEngine.Debug.Log("[KSPI] - InterstellarFissionMSRGC.MaximumThermalPower exception");
+                    UnityEngine.Debug.Log("[KSPI] - InterstellarFissionMSRGC.MaximumThermalPower exception: " + error.Message);
                     return base.MaximumThermalPower;
                 }
             }
@@ -134,6 +134,16 @@ namespace FNPlugin {
             Events["SwapFuelMode"].active = Events["SwapFuelMode"].guiActiveUnfocused = !IsEnabled && !decay_ongoing;
             Events["Refuel"].guiName = "Refuel " + (current_fuel_mode != null ? current_fuel_mode.ModeGUIName : "");
             base.OnUpdate();
+        }
+
+        public override void OnStart(PartModule.StartState state)
+        {
+            // start as normal
+            base.OnStart(state);
+
+            // auto switch if current fuel mode is depleted
+            if (isCurrentFuelDepleted())
+                SwapFuelMode();
         }
 
         public override void OnFixedUpdate()
