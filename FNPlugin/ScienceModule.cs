@@ -205,7 +205,7 @@ namespace FNPlugin {
                     List<PartResource> antimatter_resources = part.GetConnectedResources(InterstellarResourcesConfiguration.Instance.Antimatter).ToList();
                     float currentAntimatter_missing = (float) antimatter_resources.Sum(ar => ar.maxAmount-ar.amount);
 
-                    float total_electrical_power_provided = (float)(electrical_power_ratio * (GameConstants.baseAMFPowerConsumption + GameConstants.basePowerConsumption) * 1E6);
+                    float total_electrical_power_provided = (float)(electrical_power_ratio * (GameConstants.baseAMFPowerConsumption + PluginHelper.BasePowerConsumption) * 1E6);
                     double antimatter_mass = total_electrical_power_provided / GameConstants.warpspeed / GameConstants.warpspeed * 1E6 / 20000.0;
                     float antimatter_peristence_to_add = (float)-Math.Min(currentAntimatter_missing, antimatter_mass * time_diff);
                     part.RequestResource("Antimatter", antimatter_peristence_to_add);
@@ -233,8 +233,8 @@ namespace FNPlugin {
                 Fields["antimatterProductionEfficiency"].guiActive = false;
                 Fields["powerStr"].guiActive = true;
 
-                double currentpowertmp = electrical_power_ratio * GameConstants.basePowerConsumption;
-                powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.basePowerConsumption.ToString("0.00") + "MW";
+                double currentpowertmp = electrical_power_ratio * PluginHelper.BasePowerConsumption;
+                powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BasePowerConsumption.ToString("0.00") + "MW";
                 if (active_mode == 0) { // Research
                     Fields["scienceRate"].guiActive = true;
                     float scienceratetmp = science_rate_f * 86400;
@@ -307,8 +307,8 @@ namespace FNPlugin {
 
             if (IsEnabled) {
                 if (active_mode == 0) { // Research
-                    double electrical_power_provided = consumeFNResource(GameConstants.basePowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
-                    electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / GameConstants.basePowerConsumption);
+                    double electrical_power_provided = consumeFNResource(PluginHelper.BasePowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
+                    electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BasePowerConsumption);
                     global_rate_multipliers = global_rate_multipliers * electrical_power_ratio;
                     float stupidity = 0;
                     foreach (ProtoCrewMember proto_crew_member in part.protoModuleCrew) {
@@ -324,8 +324,8 @@ namespace FNPlugin {
                         science_to_add += science_rate_f * TimeWarp.fixedDeltaTime;
                     }
                 } else if (active_mode == 1) { // Fuel Reprocessing
-                    double electrical_power_provided = consumeFNResource(GameConstants.basePowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
-                    electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / GameConstants.basePowerConsumption);
+                    double electrical_power_provided = consumeFNResource(PluginHelper.BasePowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
+                    electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BasePowerConsumption);
                     global_rate_multipliers = global_rate_multipliers * electrical_power_ratio;
                     reprocessor.UpdateFrame(global_rate_multipliers);
                     if (reprocessor.getActinidesRemovedPerHour() > 0) {

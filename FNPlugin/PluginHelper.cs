@@ -95,6 +95,13 @@ namespace FNPlugin
             get { return _trustMaxPowerMult;}
         }
 
+        protected static double _basePowerConsumption = GameConstants.basePowerConsumption;
+
+        public static double BasePowerConsumption
+        {
+            get { return _basePowerConsumption; }
+        }
+
         protected static bool _isPanelHeatingClamped = false;
         public static bool IsSolarPanelHeatingClamped
         {
@@ -492,6 +499,13 @@ namespace FNPlugin
                         PluginHelper._highCoreTempTrustDivider = double.Parse(plugin_settings.GetValue("HighCoreTempTrustDivider"));
                         Debug.Log("[KSP Interstellar] High core temperature trust divider set to: " + PluginHelper.HighCoreTempTrustDivider.ToString("0.0"));
                     }
+                    if (plugin_settings.HasValue("BasePowerConsumption"))
+                    {
+                        PluginHelper._basePowerConsumption = double.Parse(plugin_settings.GetValue("BasePowerConsumption"));
+                        Debug.Log("[KSP Interstellar] Base Power Consumption set to: " + PluginHelper.BasePowerConsumption.ToString("0.0"));
+                    }
+
+                    
 
                     resources_configured = true;
                 }

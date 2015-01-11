@@ -176,10 +176,10 @@ namespace FNPlugin {
                 Fields["powerStr"].guiActive = true;
                 statusTitle = modes[active_mode] + "...";
                 if (active_mode == 0) { // Fuel Reprocessing
-                    double currentpowertmp = electrical_power_ratio * GameConstants.basePowerConsumption;
+                    double currentpowertmp = electrical_power_ratio * PluginHelper.BasePowerConsumption;
                     Fields["reprocessingRate"].guiActive = true;
                     reprocessingRate = reprocessing_rate_d.ToString("0.0") + " Hours Remaining";
-                    powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.basePowerConsumption.ToString("0.00") + "MW";
+                    powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BasePowerConsumption.ToString("0.00") + "MW";
                 } else if (active_mode == 1) { // Electrolysis
                     Fields["electrolysisRate"].guiActive = true;
                     double currentpowertmp = electrical_power_ratio * GameConstants.baseELCPowerConsumption;

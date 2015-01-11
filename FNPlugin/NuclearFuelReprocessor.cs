@@ -26,7 +26,7 @@ namespace FNPlugin {
 
         public bool HasActivityRequirements { get { return _part.GetConnectedResources(InterstellarResourcesConfiguration.Instance.Actinides).Any(rs => rs.amount < rs.maxAmount); } }
 
-        public double PowerRequirements { get { return GameConstants.basePowerConsumption; } }
+        public double PowerRequirements { get { return PluginHelper.BasePowerConsumption; } }
 
         public String Status { get { return String.Copy(_status); } }
 
