@@ -75,6 +75,7 @@ namespace FNPlugin {
         public const double helium_boiloff_fraction = 1.667794e-8;
         public const double ammoniaHydrogenFractionByMass = 0.17647;
 
+        public const double EARH_DAY_SECONDS = 86400;
         public const double KEBRIN_DAY_SECONDS = 21600;
         public const double HOUR_SECONDS = 3600;
         public const double ELECTRON_CHARGE = 1.602176565e-19;

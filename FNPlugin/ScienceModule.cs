@@ -194,7 +194,7 @@ namespace FNPlugin {
                         stupidity += proto_crew_member.stupidity;
                     }
                     stupidity = 1.5f - stupidity / 2.0f;
-                    double science_to_increment = GameConstants.baseScienceRate * time_diff / 86400 * electrical_power_ratio * stupidity * global_rate_multipliers * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) / ((float)Math.Sqrt(altitude_multiplier));
+                    double science_to_increment = GameConstants.baseScienceRate * time_diff / GameConstants.EARH_DAY_SECONDS * electrical_power_ratio * stupidity * global_rate_multipliers * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) / ((float)Math.Sqrt(altitude_multiplier));
                     science_to_increment = (double.IsNaN(science_to_increment) || double.IsInfinity(science_to_increment)) ? 0 : science_to_increment;
                     science_to_add += (float)science_to_increment;
 
@@ -237,7 +237,7 @@ namespace FNPlugin {
                 powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BasePowerConsumption.ToString("0.00") + "MW";
                 if (active_mode == 0) { // Research
                     Fields["scienceRate"].guiActive = true;
-                    float scienceratetmp = science_rate_f * 86400;
+                    double scienceratetmp = science_rate_f * GameConstants.EARH_DAY_SECONDS;
                     scienceRate = scienceratetmp.ToString("0.000") + "/Day";
                 } else if (active_mode == 1) { // Fuel Reprocessing
                     Fields["reprocessingRate"].guiActive = true;
@@ -249,7 +249,7 @@ namespace FNPlugin {
                     Fields["antimatterProductionEfficiency"].guiActive = true;
                     powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.baseAMFPowerConsumption.ToString("0.00") + "MW";
                     antimatterProductionEfficiency = (anti_factory.getAntimatterProductionEfficiency() * 100).ToString("0.000") + "%";
-                    double antimatter_rate_per_day = antimatter_rate_f * 86400;
+                    double antimatter_rate_per_day = antimatter_rate_f * GameConstants.EARH_DAY_SECONDS;
                     if (antimatter_rate_per_day > 0.1) {
                         antimatterRate = (antimatter_rate_per_day).ToString("0.000") + " mg/day";
                     } else {
@@ -262,7 +262,7 @@ namespace FNPlugin {
                 } else if (active_mode == 3) { // Electrolysis
                     currentpowertmp = electrical_power_ratio * GameConstants.baseELCPowerConsumption;
                     Fields["electrolysisRate"].guiActive = true;
-                    float electrolysisratetmp = -electrolysis_rate_f * 86400;
+                    double electrolysisratetmp = -electrolysis_rate_f * GameConstants.EARH_DAY_SECONDS;
                     electrolysisRate = electrolysisratetmp.ToString("0.0") + "mT/day";
                     powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.baseELCPowerConsumption.ToString("0.00") + "MW";
                 } else if (active_mode == 4) { // Centrifuge
@@ -317,7 +317,7 @@ namespace FNPlugin {
                     stupidity = 1.5f - stupidity / 2.0f;
                     float altitude_multiplier = (float)(vessel.altitude / (vessel.mainBody.Radius));
                     altitude_multiplier = Math.Max(altitude_multiplier, 1);
-                    science_rate_f = (float)(GameConstants.baseScienceRate * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) / 86400.0f * global_rate_multipliers * stupidity / (Mathf.Sqrt(altitude_multiplier)));
+                    science_rate_f = (float)(GameConstants.baseScienceRate * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) / GameConstants.EARH_DAY_SECONDS * global_rate_multipliers * stupidity / (Mathf.Sqrt(altitude_multiplier)));
                     if (ResearchAndDevelopment.Instance != null && !double.IsNaN(science_rate_f) && !double.IsInfinity(science_rate_f))
                     {
                         //ResearchAndDevelopment.Instance.Science = ResearchAndDevelopment.Instance.Science + science_rate_f * TimeWarp.fixedDeltaTime;

@@ -183,18 +183,18 @@ namespace FNPlugin {
                 } else if (active_mode == 1) { // Electrolysis
                     Fields["electrolysisRate"].guiActive = true;
                     double currentpowertmp = electrical_power_ratio * GameConstants.baseELCPowerConsumption;
-                    double electrolysisratetmp = -electrolysis_rate_d * 86400;
+                    double electrolysisratetmp = -electrolysis_rate_d * GameConstants.EARH_DAY_SECONDS;
                     electrolysisRate = electrolysisratetmp.ToString("0.0") + " mT/day";
                     powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.baseELCPowerConsumption.ToString("0.00") + "MW";
                 } else if (active_mode == 2) { // Sabatier ISRU
                     Fields["sabatierRate"].guiActive = true;
                     double currentpowertmp = electrical_power_ratio * GameConstants.baseELCPowerConsumption;
                     powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.baseELCPowerConsumption.ToString("0.00") + "MW";
-                    sabatierRate = "CH4 " + (methane_rate_d * 86400).ToString("0.00") + " mT/day";
+                    sabatierRate = "CH4 " + (methane_rate_d * GameConstants.EARH_DAY_SECONDS).ToString("0.00") + " mT/day";
                 } else if (active_mode == 3) { // Water Electrolysis
                     Fields["electrolysisRate"].guiActive = true;
                     double currentpowertmp = electrical_power_ratio * GameConstants.baseELCPowerConsumption;
-                    double electrolysisratetmp = -electrolysis_rate_d * 86400;
+                    double electrolysisratetmp = -electrolysis_rate_d * GameConstants.EARH_DAY_SECONDS;
                     electrolysisRate = electrolysisratetmp.ToString("0.0") + " mT/day";
                     powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.baseELCPowerConsumption.ToString("0.00") + "MW";
                 } else if (active_mode == 4) { // Anthraquinone Process

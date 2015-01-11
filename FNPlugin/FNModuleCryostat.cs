@@ -70,7 +70,7 @@ namespace FNPlugin {
         }
 
         public override string GetInfo() {
-            return "Power Requirements: " + powerReqKW.ToString("0.0") + " KW\n Powered Boil Off Fraction: " + boilOffRate * 86400 + " /day\n Unpowered Boil Off Fraction: " + (boilOffRate + boilOffAddition)* boilOffMultiplier * 86400 + " /day";
+            return "Power Requirements: " + powerReqKW.ToString("0.0") + " KW\n Powered Boil Off Fraction: " + boilOffRate * GameConstants.EARH_DAY_SECONDS + " /day\n Unpowered Boil Off Fraction: " + (boilOffRate + boilOffAddition) * boilOffMultiplier * GameConstants.EARH_DAY_SECONDS + " /day";
         }
     }
 }

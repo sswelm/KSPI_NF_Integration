@@ -40,7 +40,7 @@ namespace FNPlugin {
         {
             _current_power = PowerRequirements * rate_multiplier;
             List<INuclearFuelReprocessable> nuclear_reactors = _vessel.FindPartModulesImplementing<INuclearFuelReprocessable>();
-            double remaining_capacity_to_reprocess = GameConstants.baseReprocessingRate * TimeWarp.fixedDeltaTime / 86400.0 * rate_multiplier;
+            double remaining_capacity_to_reprocess = GameConstants.baseReprocessingRate * TimeWarp.fixedDeltaTime / GameConstants.EARH_DAY_SECONDS * rate_multiplier;
             double enum_actinides_change = 0;
             foreach (INuclearFuelReprocessable nuclear_reactor in nuclear_reactors)
             {
