@@ -307,31 +307,20 @@ namespace FNPlugin {
 
         private float GetKerbalScienceFactor(ProtoCrewMember kerbal)
         {
-            var kerbalFactor = kerbal.experienceLevel / 2f;
-            //A level 0 Kerbal is not quite zero - it.s 0.1
-            if (kerbalFactor < 0.1)
-                kerbalFactor = 0.1f;
-
-            // Level 0 Pilot:       0.05
-            // Level 0 Engineer:    0.15
-            // Level 1 Pilot:       0.25
-            // Level 1 Engineer:    0.75
-            // Level 2 Pilot:       0.50
-            // Level 2 Engineer:    1.50
-            // Level 5 Pilot:       1.25
-            // Level 5 engineer:    3.25
-
-            //(0.025 - 3.25)
+            float kerbalFactor;
+            
+            // initialise with profession
             if (kerbal.experienceTrait.Title == "Scientist")
-                kerbalFactor *= 1.5f;
+                kerbalFactor = 1.5f;
             else if (kerbal.experienceTrait.Title == "Engineer")
-                kerbalFactor *= 1f;
+                kerbalFactor = 1f;
             else
-                kerbalFactor *= 0.5f;
+                kerbalFactor = 0.5f;
 
+            // moidy by experience level
             kerbalFactor *= (kerbal.experienceLevel + 10f) / 10f;
 
-            // modify final result by kerbal stupidity (+/- 10%)
+            // final modify result by kerbal stupidity (+/- 10%)
             return kerbalFactor * (1.1f - (kerbal.stupidity / 5f));
         }
 
