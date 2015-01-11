@@ -309,56 +309,34 @@ namespace FNPlugin
             float multiplier = 1;
 
             if (refbody == REF_BODY_DUNA || refbody == REF_BODY_EVE || refbody == REF_BODY_IKE || refbody == REF_BODY_GILLY)
-            {
                 multiplier = 5f;
-            }
             else if (refbody == REF_BODY_MUN || refbody == REF_BODY_MINMUS)
-            {
                 multiplier = 2.5f;
-            }
             else if (refbody == REF_BODY_JOOL || refbody == REF_BODY_TYLO || refbody == REF_BODY_POL || refbody == REF_BODY_BOP)
-            {
                 multiplier = 10f;
-            }
             else if (refbody == REF_BODY_LAYTHE || refbody == REF_BODY_VALL)
-            {
                 multiplier = 12f;
-            }
             else if (refbody == REF_BODY_EELOO || refbody == REF_BODY_MOHO)
-            {
                 multiplier = 20f;
-            }
             else if (refbody == REF_BODY_DRES)
-            {
                 multiplier = 7.5f;
-            }
             else if (refbody == REF_BODY_KERBIN)
-            {
-                multiplier = 1f;
-            }
+                multiplier = 2f;
             else if (refbody == REF_BODY_KERBOL)
-            {
                 multiplier = 15f;
-            }
             else
-            {
-                multiplier = 0f;
-            }
+                multiplier = 20f; // must be somewhere special
 
             if (landed)
             {
                 if (refbody == REF_BODY_TYLO)
-                {
-                    multiplier = multiplier * 3f;
-                }
+                    multiplier *= 3f;
+                if (refbody == REF_BODY_KERBIN)
+                    multiplier *= 0.5f; // Starting on Kerbin is earier than getting a lab into orbit
                 else if (refbody == REF_BODY_EVE)
-                {
-                    multiplier = multiplier * 2.5f;
-                }
+                    multiplier *= 2.5f;
                 else
-                {
-                    multiplier = multiplier * 2f;
-                }
+                    multiplier *=  2f;
             }
 
             return multiplier;

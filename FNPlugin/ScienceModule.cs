@@ -189,12 +189,17 @@ namespace FNPlugin {
                     double time_diff = now - last_active_time;
                     float altitude_multiplier = (float)(vessel.altitude / (vessel.mainBody.Radius));
                     altitude_multiplier = Math.Max(altitude_multiplier, 1);
-                    float stupidity = 0;
-                    foreach (ProtoCrewMember proto_crew_member in part.protoModuleCrew) {
-                        stupidity += proto_crew_member.stupidity;
+
+                    float kerbalResearchSkillFactor = 0;
+                    foreach (ProtoCrewMember proto_crew_member in part.protoModuleCrew) 
+                    {
+                        kerbalResearchSkillFactor += GetKerbalScienceFactor(proto_crew_member) / 2f;
                     }
-                    stupidity = 1.5f - stupidity / 2.0f;
-                    double science_to_increment = GameConstants.baseScienceRate * time_diff / GameConstants.EARH_DAY_SECONDS * electrical_power_ratio * stupidity * global_rate_multipliers * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) / ((float)Math.Sqrt(altitude_multiplier));
+
+                    double science_to_increment = kerbalResearchSkillFactor * GameConstants.baseScienceRate * time_diff 
+                        / GameConstants.EARH_DAY_SECONDS * electrical_power_ratio * global_rate_multipliers * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) 
+                        / ((float)Math.Sqrt(altitude_multiplier));
+
                     science_to_increment = (double.IsNaN(science_to_increment) || double.IsInfinity(science_to_increment)) ? 0 : science_to_increment;
                     science_to_add += (float)science_to_increment;
 
@@ -300,24 +305,62 @@ namespace FNPlugin {
             }
         }
 
+        private float GetKerbalScienceFactor(ProtoCrewMember kerbal)
+        {
+            var kerbalFactor = kerbal.experienceLevel / 2f;
+            //A level 0 Kerbal is not quite zero - it.s 0.1
+            if (kerbalFactor < 0.1)
+                kerbalFactor = 0.1f;
+
+            // Level 0 Pilot:       0.05
+            // Level 0 Engineer:    0.15
+            // Level 1 Pilot:       0.25
+            // Level 1 Engineer:    0.75
+            // Level 2 Pilot:       0.50
+            // Level 2 Engineer:    1.50
+            // Level 5 Pilot:       1.25
+            // Level 5 engineer:    3.25
+
+            //(0.025 - 3.25)
+            if (kerbal.experienceTrait.Title == "Scientist")
+                kerbalFactor *= 1.5f;
+            else if (kerbal.experienceTrait.Title == "Engineer")
+                kerbalFactor *= 1f;
+            else
+                kerbalFactor *= 0.5f;
+
+            kerbalFactor *= (kerbal.experienceLevel + 5f) / 5f;
+
+            // modify final result by kerbal stupidity (+/- 10%)
+            return kerbalFactor * (1.1f - (kerbal.stupidity / 5f));
+        }
+
         public override void OnFixedUpdate() {
             float global_rate_multipliers = 1;
             crew_capacity_ratio = ((float)part.protoModuleCrew.Count) / ((float)part.CrewCapacity);
             global_rate_multipliers = global_rate_multipliers * crew_capacity_ratio;
 
-            if (IsEnabled) {
-                if (active_mode == 0) { // Research
+            if (IsEnabled) 
+            {
+                if (active_mode == 0)  // Research
+                { 
                     double electrical_power_provided = consumeFNResource(PluginHelper.BasePowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
                     electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BasePowerConsumption);
                     global_rate_multipliers = global_rate_multipliers * electrical_power_ratio;
-                    float stupidity = 0;
-                    foreach (ProtoCrewMember proto_crew_member in part.protoModuleCrew) {
-                        stupidity += proto_crew_member.stupidity;
+
+                    float kerbalScienceSkillFactor = 0;
+                    foreach (ProtoCrewMember proto_crew_member in part.protoModuleCrew)
+                    {
+                        kerbalScienceSkillFactor += GetKerbalScienceFactor(proto_crew_member) / 2f;
                     }
-                    stupidity = 1.5f - stupidity / 2.0f;
+
                     float altitude_multiplier = (float)(vessel.altitude / (vessel.mainBody.Radius));
                     altitude_multiplier = Math.Max(altitude_multiplier, 1);
-                    science_rate_f = (float)(GameConstants.baseScienceRate * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) / GameConstants.EARH_DAY_SECONDS * global_rate_multipliers * stupidity / (Mathf.Sqrt(altitude_multiplier)));
+
+                    science_rate_f = (float)(kerbalScienceSkillFactor * GameConstants.baseScienceRate * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) 
+                        / GameConstants.EARH_DAY_SECONDS * global_rate_multipliers 
+                        / (Mathf.Sqrt(altitude_multiplier)));
+
                     if (ResearchAndDevelopment.Instance != null && !double.IsNaN(science_rate_f) && !double.IsInfinity(science_rate_f))
                     {
                         //ResearchAndDevelopment.Instance.Science = ResearchAndDevelopment.Instance.Science + science_rate_f * TimeWarp.fixedDeltaTime;
