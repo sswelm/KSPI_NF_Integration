@@ -329,7 +329,7 @@ namespace FNPlugin {
             else
                 kerbalFactor *= 0.5f;
 
-            kerbalFactor *= (kerbal.experienceLevel + 5f) / 5f;
+            kerbalFactor *= (kerbal.experienceLevel + 10f) / 10f;
 
             // modify final result by kerbal stupidity (+/- 10%)
             return kerbalFactor * (1.1f - (kerbal.stupidity / 5f));
