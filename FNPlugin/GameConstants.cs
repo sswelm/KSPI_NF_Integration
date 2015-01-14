@@ -10,19 +10,14 @@ namespace FNPlugin {
         public const double baseAMFPowerConsumption = 5000;
         public const double baseCentriPowerConsumption = 43.5;
         public const double baseELCPowerConsumption = 40;
-        public const double baseMiningPowerConsumption = 10;
         public const double baseAnthraquiononePowerConsumption = 1;
         public const double basePechineyUgineKuhlmannPowerConsumption = 5;
         public const double baseHaberProcessPowerConsumption = 20;
+        public const double baseUraniumAmmonolysisPowerConsumption = 12;
 
-        public const double baseReprocessingRate = 400;
-        public const double baseScienceRate = 0.1f;
-        public const double baseMiningRatePerTon = 0.009259259259;
         public const double anthraquinoneEnergyPerTon = 1834.321;
-
-        public const double baseHaberProcessEnergyPerTon = 34200;
+        public const double haberProcessEnergyPerTon = 34200;
         public const double electrolysisEnergyPerTon = 18159;
-        public const double bakingEnergyPerTon = 4920;
         public const double aluminiumElectrolysisEnergyPerTon = 35485.714;
         public const double pechineyUgineKuhlmannEnergyPerTon = 1021;
 
@@ -38,7 +33,8 @@ namespace FNPlugin {
         public const string deuterium_helium3_fuel_mode = "Deuterium/Helium-3";
         public const string helium3_fuel_mode = "Helium-3";
 
-        public const double baseUraniumAmmonolysisConsumption = 12;
+        public const double baseReprocessingRate = 400;
+        public const double baseScienceRate = 0.1f;
         public const double baseUraniumAmmonolysisRate = 0.0002383381;
 
         public const double thorium_actinides_ratio_factor = 1;

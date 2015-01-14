@@ -30,7 +30,7 @@ namespace FNPlugin
 
         public bool HasActivityRequirements { get { return _part.GetConnectedResources(InterstellarResourcesConfiguration.Instance.Water).Any(rs => rs.amount > 0); } }
 
-        public double PowerRequirements { get { return GameConstants.baseAnthraquiononePowerConsumption; } }
+        public double PowerRequirements { get { return PluginHelper.BaseAnthraquiononePowerConsumption; } }
 
         public String Status { get { return String.Copy(_status); } }
 
@@ -46,7 +46,7 @@ namespace FNPlugin
         public void UpdateFrame(double rate_multiplier)
         {
             _current_power = PowerRequirements * rate_multiplier;
-            _current_rate = CurrentPower / GameConstants.anthraquinoneEnergyPerTon;
+            _current_rate = CurrentPower / PluginHelper.AnthraquinoneEnergyPerTon;
             _water_consumption_rate = _part.ImprovedRequestResource(InterstellarResourcesConfiguration.Instance.Water, _current_rate * TimeWarp.fixedDeltaTime / _water_density) / TimeWarp.fixedDeltaTime * _water_density;
             _hydrogen_peroxide_production_rate = -_part.RequestResource(InterstellarResourcesConfiguration.Instance.HydrogenPeroxide, -_water_consumption_rate * TimeWarp.fixedDeltaTime / _hydrogen_peroxide_density) * _hydrogen_peroxide_density / TimeWarp.fixedDeltaTime;
             updateStatusMessage();

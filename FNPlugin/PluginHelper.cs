@@ -95,11 +95,55 @@ namespace FNPlugin
             get { return _trustMaxPowerMult;}
         }
 
-        protected static double _basePowerConsumption = GameConstants.basePowerConsumption;
+        //------------------------------------------------------------------------------------------
 
-        public static double BasePowerConsumption
+        protected static double _basePowerConsumption = GameConstants.basePowerConsumption;
+        public static double BasePowerConsumption { get { return _powerConsumptionMultiplier * _basePowerConsumption; } }
+
+        protected static double _baseAMFPowerConsumption = GameConstants.baseAMFPowerConsumption;
+        public static double BaseAMFPowerConsumption { get { return _powerConsumptionMultiplier * _baseAMFPowerConsumption; } }
+
+        protected static double _baseCentriPowerConsumption = GameConstants.baseCentriPowerConsumption;
+        public static double BaseCentriPowerConsumption { get { return _powerConsumptionMultiplier * _baseCentriPowerConsumption; } }
+
+        protected static double _baseELCPowerConsumption = GameConstants.baseELCPowerConsumption;
+        public static double BaseELCPowerConsumption { get { return _powerConsumptionMultiplier * _baseELCPowerConsumption; } }
+
+        protected static double _baseAnthraquiononePowerConsumption = GameConstants.baseAnthraquiononePowerConsumption;
+        public static double BaseAnthraquiononePowerConsumption { get { return _powerConsumptionMultiplier * _baseAnthraquiononePowerConsumption; } }
+
+        protected static double _basePechineyUgineKuhlmannPowerConsumption = GameConstants.basePechineyUgineKuhlmannPowerConsumption;
+        public static double BasePechineyUgineKuhlmannPowerConsumption { get { return _powerConsumptionMultiplier * _basePechineyUgineKuhlmannPowerConsumption; } }
+
+        protected static double _baseHaberProcessPowerConsumption = GameConstants.baseHaberProcessPowerConsumption;
+        public static double BaseHaberProcessPowerConsumption { get { return _powerConsumptionMultiplier * _baseHaberProcessPowerConsumption; } }
+
+        protected static double _baseUraniumAmmonolysisPowerConsumption = GameConstants.baseUraniumAmmonolysisPowerConsumption;
+        public static double BaseUraniumAmmonolysisPowerConsumption { get { return _powerConsumptionMultiplier * _baseUraniumAmmonolysisPowerConsumption; } }
+
+        //------------------------------------------------------------------------------------------------
+
+        protected static double _anthraquinoneEnergyPerTon = GameConstants.anthraquinoneEnergyPerTon;
+        public static double AnthraquinoneEnergyPerTon { get { return _powerConsumptionMultiplier * _anthraquinoneEnergyPerTon; } }
+
+        protected static double _haberProcessEnergyPerTon = GameConstants.haberProcessEnergyPerTon;
+        public static double HaberProcessEnergyPerTon { get { return _powerConsumptionMultiplier * _haberProcessEnergyPerTon; } }
+
+        protected static double _electrolysisEnergyPerTon = GameConstants.electrolysisEnergyPerTon;
+        public static double ElectrolysisEnergyPerTon { get { return _powerConsumptionMultiplier * _electrolysisEnergyPerTon; } }
+
+        protected static double _aluminiumElectrolysisEnergyPerTon = GameConstants.aluminiumElectrolysisEnergyPerTon;
+        public static double AluminiumElectrolysisEnergyPerTon { get { return _powerConsumptionMultiplier * _aluminiumElectrolysisEnergyPerTon; } }
+
+        protected static double _pechineyUgineKuhlmannEnergyPerTon = GameConstants.pechineyUgineKuhlmannEnergyPerTon;
+        public static double PechineyUgineKuhlmannEnergyPerTon { get { return _powerConsumptionMultiplier * _pechineyUgineKuhlmannEnergyPerTon; } }
+        
+        //----------------------------------------------------------------------------------------------
+
+        protected static double _powerConsumptionMultiplier = 1;
+        public static double PowerConsumptionMultiplier
         {
-            get { return _basePowerConsumption; }
+            get { return _powerConsumptionMultiplier; }
         }
 
         protected static bool _isPanelHeatingClamped = false;
@@ -482,7 +526,11 @@ namespace FNPlugin
                         PluginHelper._basePowerConsumption = double.Parse(plugin_settings.GetValue("BasePowerConsumption"));
                         Debug.Log("[KSP Interstellar] Base Power Consumption set to: " + PluginHelper.BasePowerConsumption.ToString("0.0"));
                     }
-
+                    if (plugin_settings.HasValue("PowerConsumptionMultiplier"))
+                    {
+                        PluginHelper._powerConsumptionMultiplier = double.Parse(plugin_settings.GetValue("BasePowerConsumption"));
+                        Debug.Log("[KSP Interstellar] Base Power Consumption set to: " + PluginHelper.PowerConsumptionMultiplier.ToString("0.0"));
+                    }
                     
 
                     resources_configured = true;

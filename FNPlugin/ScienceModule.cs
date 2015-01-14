@@ -210,7 +210,7 @@ namespace FNPlugin {
                     List<PartResource> antimatter_resources = part.GetConnectedResources(InterstellarResourcesConfiguration.Instance.Antimatter).ToList();
                     float currentAntimatter_missing = (float) antimatter_resources.Sum(ar => ar.maxAmount-ar.amount);
 
-                    float total_electrical_power_provided = (float)(electrical_power_ratio * (GameConstants.baseAMFPowerConsumption + PluginHelper.BasePowerConsumption) * 1E6);
+                    float total_electrical_power_provided = (float)(electrical_power_ratio * (PluginHelper.BaseAMFPowerConsumption + PluginHelper.BasePowerConsumption) * 1E6);
                     double antimatter_mass = total_electrical_power_provided / GameConstants.warpspeed / GameConstants.warpspeed * 1E6 / 20000.0;
                     float antimatter_peristence_to_add = (float)-Math.Min(currentAntimatter_missing, antimatter_mass * time_diff);
                     part.RequestResource("Antimatter", antimatter_peristence_to_add);
@@ -249,10 +249,10 @@ namespace FNPlugin {
                     float reprocessratetmp = reprocessing_rate_f;
                     reprocessingRate = reprocessratetmp.ToString("0.0") + " Hours Remaining";
                 } else if (active_mode == 2) { // Antimatter
-                    currentpowertmp = electrical_power_ratio * GameConstants.baseAMFPowerConsumption;
+                    currentpowertmp = electrical_power_ratio * PluginHelper.BaseAMFPowerConsumption;
                     Fields["antimatterRate"].guiActive = true;
                     Fields["antimatterProductionEfficiency"].guiActive = true;
-                    powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.baseAMFPowerConsumption.ToString("0.00") + "MW";
+                    powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BaseAMFPowerConsumption.ToString("0.00") + "MW";
                     antimatterProductionEfficiency = (anti_factory.getAntimatterProductionEfficiency() * 100).ToString("0.000") + "%";
                     double antimatter_rate_per_day = antimatter_rate_f * GameConstants.EARH_DAY_SECONDS;
                     if (antimatter_rate_per_day > 0.1) {
@@ -264,16 +264,18 @@ namespace FNPlugin {
                             antimatterRate = (antimatter_rate_per_day*1e6).ToString("0.000") + " ng/day";
                         }
                     }
-                } else if (active_mode == 3) { // Electrolysis
-                    currentpowertmp = electrical_power_ratio * GameConstants.baseELCPowerConsumption;
+                } else if (active_mode == 3) 
+                { // Electrolysis
+                    currentpowertmp = electrical_power_ratio * PluginHelper.BaseELCPowerConsumption;
                     Fields["electrolysisRate"].guiActive = true;
                     double electrolysisratetmp = -electrolysis_rate_f * GameConstants.EARH_DAY_SECONDS;
                     electrolysisRate = electrolysisratetmp.ToString("0.0") + "mT/day";
-                    powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.baseELCPowerConsumption.ToString("0.00") + "MW";
-                } else if (active_mode == 4) { // Centrifuge
-                    currentpowertmp = electrical_power_ratio * GameConstants.baseCentriPowerConsumption;
+                    powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BaseELCPowerConsumption.ToString("0.00") + "MW";
+                } else if (active_mode == 4) 
+                { // Centrifuge
+                    currentpowertmp = electrical_power_ratio * PluginHelper.BaseCentriPowerConsumption;
                     Fields["centrifugeRate"].guiActive = true;
-                    powerStr = currentpowertmp.ToString("0.00") + "MW / " + GameConstants.baseCentriPowerConsumption.ToString("0.00") + "MW";
+                    powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BaseCentriPowerConsumption.ToString("0.00") + "MW";
                     float deut_per_hour = deut_rate_f * 3600;
                     centrifugeRate = deut_per_hour.ToString("0.00") + " Kg Deuterium/Hour";
                 } else {
@@ -355,7 +357,8 @@ namespace FNPlugin {
                         //ResearchAndDevelopment.Instance.Science = ResearchAndDevelopment.Instance.Science + science_rate_f * TimeWarp.fixedDeltaTime;
                         science_to_add += science_rate_f * TimeWarp.fixedDeltaTime;
                     }
-                } else if (active_mode == 1) { // Fuel Reprocessing
+                } else if (active_mode == 1) 
+                { // Fuel Reprocessing
                     double electrical_power_provided = consumeFNResource(PluginHelper.BasePowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
                     electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BasePowerConsumption);
                     global_rate_multipliers = global_rate_multipliers * electrical_power_ratio;
@@ -365,18 +368,21 @@ namespace FNPlugin {
                     } else {
                         IsEnabled = false;
                     }
-                } else if (active_mode == 2) { //Antimatter
-                    double electrical_power_provided = consumeFNResource(GameConstants.baseAMFPowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
-                    electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / GameConstants.baseAMFPowerConsumption);
+                } else if (active_mode == 2) 
+                { //Antimatter
+                    double electrical_power_provided = consumeFNResource(PluginHelper.BaseAMFPowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
+                    electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BaseAMFPowerConsumption);
                     global_rate_multipliers = crew_capacity_ratio * electrical_power_ratio;
                     anti_factory.produceAntimatterFrame(global_rate_multipliers);
                     antimatter_rate_f = (float)anti_factory.getAntimatterProductionRate();
-                } else if (active_mode == 3) {
+                } else if (active_mode == 3) 
+                {
                     IsEnabled = false;
-                } else if (active_mode == 4) { // Centrifuge
+                } else if (active_mode == 4) 
+                { // Centrifuge
                     if (vessel.Splashed) {
-                        float electrical_power_provided = consumeFNResource(GameConstants.baseCentriPowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
-                        electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / GameConstants.baseCentriPowerConsumption);
+                        float electrical_power_provided = consumeFNResource(PluginHelper.BaseCentriPowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
+                        electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BaseCentriPowerConsumption);
                         global_rate_multipliers = global_rate_multipliers * electrical_power_ratio;
                         float deut_produced = (float)(global_rate_multipliers * GameConstants.deuterium_timescale * GameConstants.deuterium_abudance * 1000.0f);
                         deut_rate_f = -ORSHelper.fixedRequestResource(part, InterstellarResourcesConfiguration.Instance.Deuterium, -deut_produced * TimeWarp.fixedDeltaTime) / TimeWarp.fixedDeltaTime;
