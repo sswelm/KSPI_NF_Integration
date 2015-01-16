@@ -137,20 +137,18 @@ namespace FNPlugin
 
         protected static double _pechineyUgineKuhlmannEnergyPerTon = GameConstants.pechineyUgineKuhlmannEnergyPerTon;
         public static double PechineyUgineKuhlmannEnergyPerTon { get { return _powerConsumptionMultiplier * _pechineyUgineKuhlmannEnergyPerTon; } }
+
+
         
         //----------------------------------------------------------------------------------------------
 
         protected static double _powerConsumptionMultiplier = 1;
-        public static double PowerConsumptionMultiplier
-        {
-            get { return _powerConsumptionMultiplier; }
-        }
+        public static double PowerConsumptionMultiplier { get { return _powerConsumptionMultiplier; } }
 
         protected static bool _isPanelHeatingClamped = false;
-        public static bool IsSolarPanelHeatingClamped
-        {
-            get { return _isPanelHeatingClamped; }
-        }
+        public static bool IsSolarPanelHeatingClamped { get { return _isPanelHeatingClamped; }}
+
+
 
         protected static bool _isThermalDissipationDisabled = false;
         public static bool IsThermalDissipationDisabled
@@ -528,10 +526,9 @@ namespace FNPlugin
                     }
                     if (plugin_settings.HasValue("PowerConsumptionMultiplier"))
                     {
-                        PluginHelper._powerConsumptionMultiplier = double.Parse(plugin_settings.GetValue("BasePowerConsumption"));
+                        PluginHelper._powerConsumptionMultiplier = double.Parse(plugin_settings.GetValue("PowerConsumptionMultiplier"));
                         Debug.Log("[KSP Interstellar] Base Power Consumption set to: " + PluginHelper.PowerConsumptionMultiplier.ToString("0.0"));
                     }
-                    
 
                     resources_configured = true;
                 }
