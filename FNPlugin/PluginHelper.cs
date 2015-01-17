@@ -89,7 +89,7 @@ namespace FNPlugin
             get { return _trustCoreTempThreshold; }
         }
 
-        protected static double _trustMaxPowerMult = GameConstants.TrustMaximumPowerMultiplier;
+        protected static double _trustMaxPowerMult = GameConstants.BaseTrustMaximumPowerMultiplier;
         public static double TrustMaxPowerMult
         {
             get { return _trustMaxPowerMult;}

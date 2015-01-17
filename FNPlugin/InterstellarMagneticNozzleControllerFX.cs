@@ -15,9 +15,12 @@ namespace FNPlugin{
 		//Persistent False
 		[KSPField(isPersistant = false)]
 		public float radius;
+        [KSPField(isPersistant = false)]
+        public float powerTrustMultiplier = 1.0f;
 
         //Config settings settings
         protected double g0 = PluginHelper.GravityConstant;
+        protected double powerTrustModifier = GameConstants.BaseTrustMaximumPowerMultiplier; 
 
 		//External
 		public bool static_updating = true;
@@ -30,7 +33,10 @@ namespace FNPlugin{
 
 
 
-		public override void OnStart(PartModule.StartState state) {
+		public override void OnStart(PartModule.StartState state) 
+        {
+            powerTrustModifier = GameConstants.BaseTrustMaximumPowerMultiplier * powerTrustMultiplier; 
+            
             if (state == StartState.Editor) return;
 
 			_attached_engine = this.part.Modules["ModuleEnginesFX"] as ModuleEnginesFX;
@@ -81,7 +87,7 @@ namespace FNPlugin{
                 if (max_power > 0)
                 {
                     power_ratio = (float)(charged_power_received / max_power);
-                    engineMaxThrust = Math.Max(2000.0 * charged_power_received * megajoules_ratio * atmo_thrust_factor * exchanger_thrust_divisor / isp / g0 / _attached_engine.currentThrottle, 0.000000001);
+                    engineMaxThrust = Math.Max(powerTrustModifier * charged_power_received * megajoules_ratio * atmo_thrust_factor * exchanger_thrust_divisor / isp / g0 / _attached_engine.currentThrottle, 0.000000001);
                 }
 
                 if (!double.IsInfinity(engineMaxThrust) && !double.IsNaN(engineMaxThrust))
