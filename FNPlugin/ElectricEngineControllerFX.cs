@@ -58,7 +58,6 @@ namespace FNPlugin
 
         //Config settings settings
         protected double g0 = PluginHelper.GravityConstant;
-        protected double powerTrustModifier = 2000; 
 
         // internal
         protected List<ElectricEnginePropellant> _propellants;
@@ -104,7 +103,6 @@ namespace FNPlugin
 
         public override void OnStart(PartModule.StartState state)
         {
-            powerTrustModifier = 2000.0 * powerTrustMultiplier;
             String[] resources_to_supply = { FNResourceManager.FNRESOURCE_WASTEHEAT };
             _attached_engine = this.part.Modules["ModuleEnginesFX"] as ModuleEnginesFX;
             this.resources_to_supply = resources_to_supply;
@@ -223,6 +221,7 @@ namespace FNPlugin
                 {
                     updateISP();
                     int engine_count = Math.Max(vessel.FindPartModulesImplementing<ElectricEngineControllerFX>().Count(ee => ee.IsOperational),1); // max of operational electric engines and 1
+                    double powerTrustModifier = GetPowerTrustModifier();
                     double total_max_thrust = evaluateMaxThrust();
                     double thrust_per_engine = total_max_thrust / (double)engine_count;
                     double power_per_engine = Math.Min(_attached_engine.currentThrottle * thrust_per_engine * _current_propellant.IspMultiplier * baseISP / powerTrustModifier * g0, maxPower * _current_propellant.Efficiency);
@@ -233,6 +232,7 @@ namespace FNPlugin
                     _electrical_consumption_f = (float)power_received;
                     _heat_production_f = (float)heat_production;
                     // thrust values
+                    
                     double thrust_ratio = power_per_engine > 0 ? Math.Min(power_received / power_per_engine, 1.0) : 1;
                     double actual_max_thrust = _current_propellant.Efficiency * powerTrustModifier * power_received / (_current_propellant.IspMultiplier * baseISP * g0 * _attached_engine.currentThrottle);
 
@@ -284,6 +284,7 @@ namespace FNPlugin
 
         public override string GetInfo()
         {
+            double powerTrustModifier = GetPowerTrustModifier();
             List<ElectricEnginePropellant> props = getPropellants();
             string return_str = "Max Power Consumption: " + maxPower.ToString("") + " MW\n";
             double thrust_per_mw = (2e6 * powerTrustMultiplier) / g0 / baseISP / 1000.0;
@@ -316,6 +317,7 @@ namespace FNPlugin
         {
             if (_current_propellant != null)
             {
+                double powerTrustModifier = GetPowerTrustModifier();
                 double total_power_output = getStableResourceSupply(FNResourceManager.FNRESOURCE_MEGAJOULES);
                 double final_thrust_store = _current_propellant.Efficiency * powerTrustModifier * total_power_output / (baseISP * _current_propellant.IspMultiplier * g0);
                 return final_thrust_store;
@@ -328,6 +330,11 @@ namespace FNPlugin
             FloatCurve newISP = new FloatCurve();
             newISP.Add(0, (float)(baseISP * _current_propellant.IspMultiplier));
             _attached_engine.atmosphereCurve = newISP;
+        }
+
+        protected double GetPowerTrustModifier()
+        {
+            return GameConstants.BaseTrustPowerMultiplier * PluginHelper.GlobalElectricEnginePowerMaxTrustMult * powerTrustMultiplier;
         }
 
         protected void updatePropellantBar()

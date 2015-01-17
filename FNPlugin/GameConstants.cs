@@ -78,6 +78,7 @@ namespace FNPlugin {
         public const double ATOMIC_MASS_UNIT =  1.660538921e-27;
         public const double STANDARD_GRAVITY = 9.80665;
 
+        public const double LfoFuelTrustModifier = 2.2222;
         public const double IspCoreTemperatureMultiplier = 22.371670613;
         public const double BaseTrustPowerMultiplier = 2000;
         public const double HighCoreTemperatureTrustDivider = 16000;
