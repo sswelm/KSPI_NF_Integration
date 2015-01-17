@@ -21,6 +21,8 @@ namespace FNPlugin{
 		[KSPField(isPersistant = true)]
 		public int fuel_mode = 0;
 
+        
+
 		//Persistent False
 		[KSPField(isPersistant = false)]
 		public bool isJet = false;
@@ -34,6 +36,8 @@ namespace FNPlugin{
 		public float radius; 
 		[KSPField(isPersistant = false)]
 		public string upgradeTechReq = null;
+        [KSPField(isPersistant = false)]
+        public float powerTrustMultiplier = 1.0f;
 
 		//External
 		public bool static_updating = true;
@@ -75,6 +79,7 @@ namespace FNPlugin{
 		//Config settings 
         protected double g0 = PluginHelper.GravityConstant;
         protected double isp_temp_rat = PluginHelper.IspCoreTempMult;
+        
 
 		//Static
 		static Dictionary<string, double> intake_amounts = new Dictionary<string, double>();
@@ -130,7 +135,8 @@ namespace FNPlugin{
             estimateEditorPerformance();
         }
 
-		public override void OnStart(PartModule.StartState state) {
+		public override void OnStart(PartModule.StartState state) 
+        {
             engineType = originalName;
             myAttachedEngine = this.part.Modules["ModuleEngines"] as ModuleEngines;
             // find attached thermal source
@@ -378,6 +384,7 @@ namespace FNPlugin{
             double coretempthreshold = PluginHelper.TrustCoreTempThreshold;
             double lowcoretempbase = PluginHelper.LowCoreTempBaseTrust;
             double highcoretempdiv = PluginHelper.HighCoreTempTrustDivider;
+            double powerTrustModifier = GameConstants.BaseTrustPowerMultiplier * PluginHelper.GlobalThermalNozzlePowerMaxTrustMult * powerTrustMultiplier;
 
             bool attached_reactor_upgraded = false;
             FloatCurve atmospherecurve = new FloatCurve();
@@ -399,7 +406,7 @@ namespace FNPlugin{
                     ? (myAttachedReactor.CoreTemperature + lowcoretempbase) / (coretempthreshold + lowcoretempbase)
                     : 1.0 + (myAttachedReactor.CoreTemperature - coretempthreshold) / highcoretempdiv;
 
-                thrust = (float)(myAttachedReactor.MaximumPower * PluginHelper.TrustMaxPowerMult * heatTrustModifier / g0 / maxISP);
+                thrust = (float)(myAttachedReactor.MaximumPower * powerTrustModifier * heatTrustModifier / g0 / maxISP);
                 myAttachedEngine.maxThrust = thrust;
                 myAttachedEngine.atmosphereCurve = atmospherecurve;
             } else {
@@ -409,11 +416,19 @@ namespace FNPlugin{
             }
         }
 
-		public override void OnFixedUpdate() {
-            if (myAttachedEngine.isOperational && myAttachedEngine.currentThrottle > 0 && myAttachedReactor != null) {
+		public override void OnFixedUpdate() 
+        {
+            if (myAttachedEngine.isOperational && myAttachedEngine.currentThrottle > 0 && myAttachedReactor != null) 
+            {
 				if (!myAttachedReactor.IsActive) {
 					myAttachedReactor.enableIfPossible();
 				}
+
+                double coretempthreshold = PluginHelper.TrustCoreTempThreshold;
+                double lowcoretempbase = PluginHelper.LowCoreTempBaseTrust;
+                double highcoretempdiv = PluginHelper.HighCoreTempTrustDivider;
+                double powerTrustModifier = GameConstants.BaseTrustPowerMultiplier * PluginHelper.GlobalThermalNozzlePowerMaxTrustMult * powerTrustMultiplier;
+
 				updateIspEngineParams ();
 				float curve_eval_point = (float)Math.Min (FlightGlobals.getStaticPressure (vessel.transform.position), 1.0);
 				float currentIsp = myAttachedEngine.atmosphereCurve.Evaluate (curve_eval_point);
@@ -421,19 +436,20 @@ namespace FNPlugin{
 				this.current_isp = currentIsp;
 				// scale down thrust if it's attached to the wrong sized reactor
 				float heat_exchanger_thrust_divisor = 1;
-				if (radius > myAttachedReactor.getRadius ()) {
-					heat_exchanger_thrust_divisor = myAttachedReactor.getRadius () * myAttachedReactor.getRadius () / radius / radius;
-				} else {
-					heat_exchanger_thrust_divisor = radius * radius / myAttachedReactor.getRadius () / myAttachedReactor.getRadius ();
-				}
 
-				if (myAttachedReactor.getRadius () == 0 || radius == 0) {
+				if (radius > myAttachedReactor.getRadius ()) 
+					heat_exchanger_thrust_divisor = myAttachedReactor.getRadius () * myAttachedReactor.getRadius () / radius / radius;
+                else 
+					heat_exchanger_thrust_divisor = radius * radius / myAttachedReactor.getRadius () / myAttachedReactor.getRadius ();
+
+				if (myAttachedReactor.getRadius () == 0 || radius == 0) 
 					heat_exchanger_thrust_divisor = 1;
-				}
+
 				// get the flameout safety limit
 				atmospheric_limit = getAtmosphericLimit ();
                 double thrust_limit = myAttachedEngine.thrustPercentage / 100;
-                if (currentpropellant_is_jet) {
+                if (currentpropellant_is_jet) 
+                {
                     int pre_coolers_active = vessel.FindPartModulesImplementing<FNModulePreecooler>().Where(prc => prc.isFunctional()).Count();
                     int intakes_open = vessel.FindPartModulesImplementing<ModuleResourceIntake>().Where(mre => mre.intakeEnabled).Count();
                     double proportion = Math.Pow((double)(intakes_open - pre_coolers_active) / (double)intakes_open, 0.1);
@@ -456,9 +472,10 @@ namespace FNPlugin{
                 }
                 double thermal_consume_total = assThermalPower * TimeWarp.fixedDeltaTime * myAttachedEngine.currentThrottle * atmospheric_limit;
                 double thermal_power_received = consumeFNResource(thermal_consume_total, FNResourceManager.FNRESOURCE_THERMALPOWER) / TimeWarp.fixedDeltaTime;
-                if (thermal_power_received * TimeWarp.fixedDeltaTime < thermal_consume_total) {
-                    thermal_power_received += consumeFNResource(thermal_consume_total-thermal_power_received*TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_CHARGED_PARTICLES) / TimeWarp.fixedDeltaTime;
-                }
+
+                if (thermal_power_received * TimeWarp.fixedDeltaTime < thermal_consume_total) 
+                    thermal_power_received += consumeFNResource(thermal_consume_total-thermal_power_received * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_CHARGED_PARTICLES) / TimeWarp.fixedDeltaTime;
+
 				consumeFNResource (thermal_power_received * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_WASTEHEAT);
 				float power_ratio = 0.0f;
 				double engineMaxThrust = 0.01;
@@ -466,7 +483,11 @@ namespace FNPlugin{
                 if (assThermalPower > 0) 
                 {
 					power_ratio = (float)(thermal_power_received / assThermalPower);
-                    engineMaxThrust = Math.Max(thrust_limit * PluginHelper.TrustMaxPowerMult * thermal_power_received / maxISP / g0 * heat_exchanger_thrust_divisor * ispratio / myAttachedEngine.currentThrottle, 0.01);
+                    double heatTrustModifier = coretempthreshold <= 0 ? 1.0 : myAttachedReactor.CoreTemperature < coretempthreshold
+                        ? (myAttachedReactor.CoreTemperature + lowcoretempbase) / (coretempthreshold + lowcoretempbase)
+                        : 1.0 + (myAttachedReactor.CoreTemperature - coretempthreshold) / highcoretempdiv;
+
+                    engineMaxThrust = Math.Max(thrust_limit * powerTrustModifier * heatTrustModifier * thermal_power_received / maxISP / g0 * heat_exchanger_thrust_divisor * ispratio / myAttachedEngine.currentThrottle, 0.01);
 				} 
 				//print ("B: " + engineMaxThrust);
 				// set up TWR limiter if on

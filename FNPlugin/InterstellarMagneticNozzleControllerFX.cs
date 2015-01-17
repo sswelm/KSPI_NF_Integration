@@ -18,25 +18,19 @@ namespace FNPlugin{
         [KSPField(isPersistant = false)]
         public float powerTrustMultiplier = 1.0f;
 
-        //Config settings settings
+        //Config settings
         protected double g0 = PluginHelper.GravityConstant;
-        protected double powerTrustModifier = GameConstants.BaseTrustMaximumPowerMultiplier; 
 
 		//External
 		public bool static_updating = true;
 		public bool static_updating2 = true;
 
-
 		//Internal
 		protected ModuleEnginesFX _attached_engine;
 		protected IChargedParticleSource _attached_reactor;
 
-
-
 		public override void OnStart(PartModule.StartState state) 
         {
-            powerTrustModifier = GameConstants.BaseTrustMaximumPowerMultiplier * powerTrustMultiplier; 
-            
             if (state == StartState.Editor) return;
 
 			_attached_engine = this.part.Modules["ModuleEnginesFX"] as ModuleEnginesFX;
@@ -87,6 +81,7 @@ namespace FNPlugin{
                 if (max_power > 0)
                 {
                     power_ratio = (float)(charged_power_received / max_power);
+                    double powerTrustModifier = GameConstants.BaseTrustPowerMultiplier * powerTrustMultiplier; 
                     engineMaxThrust = Math.Max(powerTrustModifier * charged_power_received * megajoules_ratio * atmo_thrust_factor * exchanger_thrust_divisor / isp / g0 / _attached_engine.currentThrottle, 0.000000001);
                 }
 

@@ -89,10 +89,16 @@ namespace FNPlugin
             get { return _trustCoreTempThreshold; }
         }
 
-        protected static double _trustMaxPowerMult = GameConstants.BaseTrustMaximumPowerMultiplier;
-        public static double TrustMaxPowerMult
+        protected static double _globalThermalNozzlePowerMaxTrustMult = 1;
+        public static double GlobalThermalNozzlePowerMaxTrustMult
         {
-            get { return _trustMaxPowerMult;}
+            get { return _globalThermalNozzlePowerMaxTrustMult;}
+        }
+
+        protected static double _globalMagneticNozzlePowerMaxTrustMult = 1;
+        public static double GlobalMagneticNozzlePowerMaxTrustMult
+        {
+            get { return _globalMagneticNozzlePowerMaxTrustMult; }
         }
 
         //------------------------------------------------------------------------------------------
@@ -499,11 +505,21 @@ namespace FNPlugin
                         PluginHelper._ispCoreTempMult = double.Parse(plugin_settings.GetValue("IspCoreTempMult"));
                         Debug.Log("[KSP Interstellar] Isp core temperature multiplier set to: " + PluginHelper.IspCoreTempMult.ToString("0.000000"));
                     }
-                    if (plugin_settings.HasValue("TrustMaxPowerMult"))
+
+
+                    if (plugin_settings.HasValue("GlobalThermalNozzlePowerMaxTrustMult"))
                     {
-                        PluginHelper._trustMaxPowerMult = double.Parse(plugin_settings.GetValue("TrustMaxPowerMult"));
-                        Debug.Log("[KSP Interstellar] Maximum PowerTrust Multiplier set to: " + PluginHelper.TrustMaxPowerMult.ToString("0.0"));
+                        PluginHelper._globalThermalNozzlePowerMaxTrustMult = double.Parse(plugin_settings.GetValue("GlobalThermalNozzlePowerMaxTrustMult"));
+                        Debug.Log("[KSP Interstellar] Maximum Generic Thermal Power Maximum Trust Multiplier set to: " + PluginHelper.GlobalThermalNozzlePowerMaxTrustMult.ToString("0.0"));
                     }
+                    if (plugin_settings.HasValue("GlobalMagneticNozzlePowerMaxTrustMult"))
+                    {
+                        PluginHelper._globalMagneticNozzlePowerMaxTrustMult = double.Parse(plugin_settings.GetValue("GlobalMagneticNozzlePowerMaxTrustMult"));
+                        Debug.Log("[KSP Interstellar] Maximum Generic Magnetic Nozzle Power Maximum Trust Multiplier set to: " + PluginHelper.GlobalMagneticNozzlePowerMaxTrustMult.ToString("0.0"));
+                    }
+
+
+
                     if (plugin_settings.HasValue("TrustCoreTempThreshold"))
                     {
                         PluginHelper._trustCoreTempThreshold = double.Parse(plugin_settings.GetValue("TrustCoreTempThreshold"));
