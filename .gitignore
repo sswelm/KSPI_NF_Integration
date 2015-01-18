@@ -4,8 +4,6 @@ obj
 WarpPlugin.userprefs
 FNPlugin/obj
 WPv023/
-*.obj
-*.mu
 *.tga
 *.ogg
 *.mbm
