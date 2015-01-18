@@ -66,22 +66,13 @@ namespace FNPlugin
         }
 
         protected static double _ispCoreTempMult = GameConstants.IspCoreTemperatureMultiplier;
-        public static double IspCoreTempMult
-        {
-            get { return _ispCoreTempMult; }
-        }
+        public static double IspCoreTempMult { get { return _ispCoreTempMult; } }
 
         protected static double _lowCoreTempBaseTrust = 0;
-        public static double LowCoreTempBaseTrust
-        {
-            get { return _lowCoreTempBaseTrust; }
-        }
+        public static double LowCoreTempBaseTrust { get { return _lowCoreTempBaseTrust; } }
 
         protected static double _highCoreTempTrustDivider = GameConstants.HighCoreTemperatureTrustDivider;
-        public static double HighCoreTempTrustDivider
-        {
-            get { return _highCoreTempTrustDivider; }
-        }
+        public static double HighCoreTempTrustDivider { get { return _highCoreTempTrustDivider; } }
 
         protected static double _trustCoreTempThreshold = 0;
         public static double TrustCoreTempThreshold { get { return _trustCoreTempThreshold; } }
@@ -94,6 +85,9 @@ namespace FNPlugin
 
         protected static double _globalElectricEnginePowerMaxTrustMult = 1;
         public static double GlobalElectricEnginePowerMaxTrustMult { get { return _globalElectricEnginePowerMaxTrustMult; } }
+
+        protected static float _maxPowerDrawForExoticMatterMult = 1;
+        public static float MaxPowerDrawForExoticMatterMult { get { return _maxPowerDrawForExoticMatterMult; } }
 
         protected static double _lfoFuelTrustModifier = GameConstants.LfoFuelTrustModifier;
         public static double LfoFuelTrustModifier { get { return _lfoFuelTrustModifier; } }
@@ -151,19 +145,14 @@ namespace FNPlugin
         protected static bool _isPanelHeatingClamped = false;
         public static bool IsSolarPanelHeatingClamped { get { return _isPanelHeatingClamped; }}
 
-
-
         protected static bool _isThermalDissipationDisabled = false;
-        public static bool IsThermalDissipationDisabled
-        {
-            get { return _isThermalDissipationDisabled; }
-        }
+        public static bool IsThermalDissipationDisabled { get { return _isThermalDissipationDisabled; } }
 
         protected static bool _isRecieverTempTweaked = false;
-        public static bool IsRecieverCoreTempTweaked
-        {
-            get { return _isRecieverTempTweaked; }
-        }
+        public static bool IsRecieverCoreTempTweaked { get { return _isRecieverTempTweaked; } }
+
+        protected static bool _useLimitedWarpTravel = false;
+        public static bool UseLimitedWarpTravel { get { return _useLimitedWarpTravel; } }
 
         #endregion
 
@@ -492,6 +481,18 @@ namespace FNPlugin
                         PluginHelper._isRecieverTempTweaked = bool.Parse(plugin_settings.GetValue("RecieverTempTweak"));
                         Debug.Log("[KSP Interstellar] Microwave reciever CoreTemp tweak is set to enabled: " + PluginHelper.IsRecieverCoreTempTweaked.ToString());
                     }
+                    if (plugin_settings.HasValue("UseLimitedWarpTravel"))
+                    {
+                        PluginHelper._useLimitedWarpTravel = bool.Parse(plugin_settings.GetValue("UseLimitedWarpTravel"));
+                        Debug.Log("[KSP Interstellar] Use Limited Warp Travel to enabled: " + PluginHelper.UseLimitedWarpTravel.ToString());
+                    }
+
+                    if (plugin_settings.HasValue("MaxPowerDrawForExoticMatterMult"))
+                    {
+                        PluginHelper._maxPowerDrawForExoticMatterMult = float.Parse(plugin_settings.GetValue("MaxPowerDrawForExoticMatterMult"));
+                        Debug.Log("[KSP Interstellar] Max Power Draw For Exotic Matter Multiplier set to: " + PluginHelper.MaxPowerDrawForExoticMatterMult.ToString("0.000000"));
+                    }
+
                     if (plugin_settings.HasValue("GravityConstant"))
                     {
                         PluginHelper._gravityConstant = double.Parse(plugin_settings.GetValue("GravityConstant"));
