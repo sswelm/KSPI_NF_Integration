@@ -71,8 +71,8 @@ namespace FNPlugin
         protected static double _lowCoreTempBaseTrust = 0;
         public static double LowCoreTempBaseTrust { get { return _lowCoreTempBaseTrust; } }
 
-        protected static double _highCoreTempTrustDivider = GameConstants.HighCoreTemperatureTrustDivider;
-        public static double HighCoreTempTrustDivider { get { return _highCoreTempTrustDivider; } }
+        protected static double _highCoreTempTrustMult = GameConstants.HighCoreTempTrustMultiplier;
+        public static double HighCoreTempTrustMult { get { return _highCoreTempTrustMult; } }
 
         protected static double _trustCoreTempThreshold = 0;
         public static double TrustCoreTempThreshold { get { return _trustCoreTempThreshold; } }
@@ -139,6 +139,9 @@ namespace FNPlugin
         
         //----------------------------------------------------------------------------------------------
 
+        protected static float _maxThermalNozzleIsp = GameConstants.MaxThermalNozzleIsp;
+        public static float MaxThermalNozzleIsp { get { return _maxThermalNozzleIsp; } }
+
         protected static double _powerConsumptionMultiplier = 1;
         public static double PowerConsumptionMultiplier { get { return _powerConsumptionMultiplier; } }
 
@@ -151,8 +154,8 @@ namespace FNPlugin
         protected static bool _isRecieverTempTweaked = false;
         public static bool IsRecieverCoreTempTweaked { get { return _isRecieverTempTweaked; } }
 
-        protected static bool _useLimitedWarpTravel = false;
-        public static bool UseLimitedWarpTravel { get { return _useLimitedWarpTravel; } }
+        protected static bool _limitedWarpTravel = false;
+        public static bool LimitedWarpTravel { get { return _limitedWarpTravel; } }
 
         #endregion
 
@@ -481,10 +484,10 @@ namespace FNPlugin
                         PluginHelper._isRecieverTempTweaked = bool.Parse(plugin_settings.GetValue("RecieverTempTweak"));
                         Debug.Log("[KSP Interstellar] Microwave reciever CoreTemp tweak is set to enabled: " + PluginHelper.IsRecieverCoreTempTweaked.ToString());
                     }
-                    if (plugin_settings.HasValue("UseLimitedWarpTravel"))
+                    if (plugin_settings.HasValue("LimitedWarpTravel"))
                     {
-                        PluginHelper._useLimitedWarpTravel = bool.Parse(plugin_settings.GetValue("UseLimitedWarpTravel"));
-                        Debug.Log("[KSP Interstellar] Use Limited Warp Travel to enabled: " + PluginHelper.UseLimitedWarpTravel.ToString());
+                        PluginHelper._limitedWarpTravel = bool.Parse(plugin_settings.GetValue("LimitedWarpTravel"));
+                        Debug.Log("[KSP Interstellar] Apply Limited Warp Travel: " + PluginHelper.LimitedWarpTravel.ToString());
                     }
 
                     if (plugin_settings.HasValue("MaxPowerDrawForExoticMatterMult"))
@@ -525,6 +528,11 @@ namespace FNPlugin
                         PluginHelper._lfoFuelTrustModifier = double.Parse(plugin_settings.GetValue("LfoFuelTrustModifier"));
                         Debug.Log("[KSP Interstellar] Maximum Lfo Fuel Trust Multiplier set to: " + PluginHelper.LfoFuelTrustModifier.ToString("0.0"));
                     }
+                    if (plugin_settings.HasValue("MaxThermalNozzleIsp"))
+                    {
+                        PluginHelper._maxThermalNozzleIsp = float.Parse(plugin_settings.GetValue("MaxThermalNozzleIsp"));
+                        Debug.Log("[KSP Interstellar] Maximum Thermal Nozzle Isp set to: " + PluginHelper.MaxThermalNozzleIsp.ToString("0.0"));
+                    }
 
                     if (plugin_settings.HasValue("TrustCoreTempThreshold"))
                     {
@@ -536,10 +544,10 @@ namespace FNPlugin
                         PluginHelper._lowCoreTempBaseTrust = double.Parse(plugin_settings.GetValue("LowCoreTempBaseTrust"));
                         Debug.Log("[KSP Interstellar] Low core temperature base trust modifier set to: " + PluginHelper.LowCoreTempBaseTrust.ToString("0.0"));
                     }
-                    if (plugin_settings.HasValue("HighCoreTempTrustDivider"))
+                    if (plugin_settings.HasValue("HighCoreTempTrustMult"))
                     {
-                        PluginHelper._highCoreTempTrustDivider = double.Parse(plugin_settings.GetValue("HighCoreTempTrustDivider"));
-                        Debug.Log("[KSP Interstellar] High core temperature trust divider set to: " + PluginHelper.HighCoreTempTrustDivider.ToString("0.0"));
+                        PluginHelper._highCoreTempTrustMult = double.Parse(plugin_settings.GetValue("HighCoreTempTrustMult"));
+                        Debug.Log("[KSP Interstellar] High core temperature trust divider set to: " + PluginHelper.HighCoreTempTrustMult.ToString("0.0"));
                     }
                     if (plugin_settings.HasValue("BasePowerConsumption"))
                     {

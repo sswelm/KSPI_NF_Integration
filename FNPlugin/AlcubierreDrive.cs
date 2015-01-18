@@ -107,7 +107,8 @@ namespace FNPlugin
         public void ActivateWarpDrive() 
         {
             if (IsEnabled) return;
-            
+
+            isDeactivatingWarpDrive = false;
             Vessel vess = this.part.vessel;
             //float atmosphere_height = vess.mainBody.maxAtmosphereAltitude;
             if (vess.altitude <= PluginHelper.getMaxAtmosphericAltitude(vess.mainBody) && vess.mainBody.flightGlobalsIndex != 0) 
@@ -122,13 +123,13 @@ namespace FNPlugin
 
             if (exotic_matter_available < powerRequiredForWarp)
             {
-                ScreenMessages.PostScreenMessage("Warp drive charging!", 5.0f, ScreenMessageStyle.UPPER_CENTER);
+                ScreenMessages.PostScreenMessage("Warp drive isn't fully charged yet for Warp!", 5.0f, ScreenMessageStyle.UPPER_CENTER);
                 return;
             }
 
-            var totalConsumedPower = PluginHelper.UseLimitedWarpTravel 
-                ? powerRequiredForWarp 
-                : (0.5 * powerRequiredForWarp) + (exotic_matter_available - powerRequiredForWarp);
+            var totalConsumedPower = PluginHelper.LimitedWarpTravel
+                ? (0.5 * powerRequiredForWarp) + (exotic_matter_available - powerRequiredForWarp)
+                : powerRequiredForWarp;
 
             part.RequestResource(InterstellarResourcesConfiguration.Instance.ExoticMatter, totalConsumedPower);
             warp_sound.Play();
@@ -136,9 +137,8 @@ namespace FNPlugin
             
             //Orbit planetOrbit = vessel.orbit.referenceBody.orbit;
             Vector3d heading = part.transform.up;
-            double temp1 = heading.y;
             heading.y = heading.z;
-            heading.z = temp1;
+            heading.z = heading.y;
             
             Vector3d position = vessel.orbit.pos;
             heading = heading * GameConstants.warpspeed * warp_factors[selected_factor];
@@ -157,7 +157,7 @@ namespace FNPlugin
 			if (!IsEnabled) 
                 return;
 
-            if (PluginHelper.UseLimitedWarpTravel)
+            if (PluginHelper.LimitedWarpTravel)
             {
                 // retrieve current strength of warpfield
                 List<PartResource> resources = part.GetConnectedResources(InterstellarResourcesConfiguration.Instance.ExoticMatter).ToList();
@@ -169,6 +169,8 @@ namespace FNPlugin
                     isDeactivatingWarpDrive = true;
                     return;
                 }
+                // deactive charging
+                IsCharging = false;
                 isDeactivatingWarpDrive = false;
             }
 
@@ -448,7 +450,7 @@ namespace FNPlugin
             //    tex_count = 0;
             //}
 
-            if (PluginHelper.UseLimitedWarpTravel)
+            if (PluginHelper.LimitedWarpTravel)
                 LimitedWarpDriveCharging();
             else
                 SimpleWarpdriveCharging();
@@ -485,20 +487,23 @@ namespace FNPlugin
                         : Math.Min(1.0 / ((normalisedReturnedPower * 50.0) / megajoules_required), naturalWarpfieldDecay);
 
                     double lostWarpFieldForWarp = lostWarpField * warpSpeedModifier;
-                    double TimeLeftInSec = Math.Ceiling(currentExoticMatter / lostWarpFieldForWarp);
-                    DriveStatus = "Warp for " + (int)(TimeLeftInSec / 60) + " min " + (int)(TimeLeftInSec % 60) + " sec";
+                    UpdateWarpDriveStatus(currentExoticMatter, lostWarpFieldForWarp);
                     warpfieldDelta = lostWarpFieldForWarp * TimeWarp.fixedDeltaTime;
                 }
                 else
                 {
                     // charge warp engine
-                    var warpfieldTreshHold = (megajoules_required / 100.0);
+                    double warpfieldTreshHold = (megajoules_required / 100.0);
                     double WarpFieldCharge = Math.Min(-(normalisedReturnedPower - warpfieldTreshHold) / 25.0f, warpfieldTreshHold);
                     warpfieldDelta = WarpFieldCharge * warpSpeedModifier * TimeWarp.fixedDeltaTime;
                 }
             }
             else
-                warpfieldDelta = naturalWarpfieldDecay * warpSpeedModifier * TimeWarp.fixedDeltaTime;  // discharge warp engine
+            {
+                double lostWarpFieldForWarp = naturalWarpfieldDecay * warpSpeedModifier;
+                UpdateWarpDriveStatus(currentExoticMatter, lostWarpFieldForWarp);
+                warpfieldDelta = lostWarpFieldForWarp * TimeWarp.fixedDeltaTime;  // discharge warp engine
+            }
 
             // modilfy warpfield/warpengine
             part.RequestResource(InterstellarResourcesConfiguration.Instance.ExoticMatter, warpfieldDelta);
@@ -534,6 +539,12 @@ namespace FNPlugin
                     warp_effect.renderer.enabled = true;
                 }
             }
+        }
+
+        private void UpdateWarpDriveStatus(float currentExoticMatter, double lostWarpFieldForWarp)
+        {
+            double TimeLeftInSec = Math.Ceiling(currentExoticMatter / lostWarpFieldForWarp);
+            DriveStatus = "Warp for " + (int)(TimeLeftInSec / 60) + " min " + (int)(TimeLeftInSec % 60) + " sec";
         }
 
         private void SimpleWarpdriveCharging()

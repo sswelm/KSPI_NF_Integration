@@ -87,47 +87,55 @@ namespace FNPlugin{
         public String UpgradeTechnology { get { return upgradeTechReq; } }
 
 		[KSPEvent(guiActive = true, guiActiveEditor = true, guiName = "Toggle Propellant", active = true)]
-		public void TogglePropellant() {
+		public void TogglePropellant() 
+        {
 			fuel_mode++;
-			if (fuel_mode >= propellants.Length) {
+			if (fuel_mode >= propellants.Length) 
 				fuel_mode = 0;
-			}
+			
 			setupPropellants();
 		}
         
 		[KSPAction("Toggle Propellant")]
-		public void TogglePropellantAction(KSPActionParam param) {
+		public void TogglePropellantAction(KSPActionParam param) 
+        {
 			TogglePropellant();
 		}
 
 		[KSPEvent(guiActive = true, guiName = "Retrofit", active = true)]
-		public void RetrofitEngine() {
+		public void RetrofitEngine() 
+        {
 			if (ResearchAndDevelopment.Instance == null) { return;}
 			if (isupgraded || ResearchAndDevelopment.Instance.Science < upgradeCost) { return; }
 			upgradePartModule ();
             ResearchAndDevelopment.Instance.AddScience(-upgradeCost, TransactionReasons.RnDPartPurchase);
 		}
 
-		public void upgradePartModule() {
+		public void upgradePartModule() 
+        {
 			engineType = upgradedName;
 			propellants = FNNozzleController.getPropellantsHybrid();
 			isHybrid = true;
 			isupgraded = true;
 		}
 
-		public ConfigNode[] getPropellants() {
+		public ConfigNode[] getPropellants() 
+        {
 			return propellants;
 		}
 
-        public void OnEditorAttach() {
-            foreach (AttachNode attach_node in part.attachNodes) {
-                if (attach_node.attachedPart != null) {
+        public void OnEditorAttach() 
+        {
+            foreach (AttachNode attach_node in part.attachNodes) 
+            {
+                if (attach_node.attachedPart != null) 
+                {
                     List<IThermalSource> sources = attach_node.attachedPart.FindModulesImplementing<IThermalSource>();
-                    if (sources.Count > 0) {
+                    if (sources.Count > 0) 
+                    {
                         myAttachedReactor = sources.First();
-                        if (myAttachedReactor != null) {
+                        if (myAttachedReactor != null) 
                             break;
-                        }
                     }
                 }
             }
@@ -139,19 +147,22 @@ namespace FNPlugin{
             engineType = originalName;
             myAttachedEngine = this.part.Modules["ModuleEngines"] as ModuleEngines;
             // find attached thermal source
-            foreach (AttachNode attach_node in part.attachNodes) {
-                if (attach_node.attachedPart != null) {
+            foreach (AttachNode attach_node in part.attachNodes) 
+            {
+                if (attach_node.attachedPart != null) 
+                {
                     List<IThermalSource> sources = attach_node.attachedPart.FindModulesImplementing<IThermalSource>();
-                    if (sources.Count > 0) {
+                    if (sources.Count > 0) 
+                    {
                         myAttachedReactor = sources.First();
-                        if (myAttachedReactor != null) {
+                        if (myAttachedReactor != null) 
                             break;
-                        }
                     }
                 }
             }
 
-            if (state == StartState.Editor) {
+            if (state == StartState.Editor) 
+            {
                 part.OnEditorAttach += OnEditorAttach;
                 propellants = getPropellants(isJet);
                 if (this.HasTechsRequiredToUpgrade() && isJet)
@@ -166,17 +177,17 @@ namespace FNPlugin{
 			fuel_gauge = part.stackIcon.DisplayInfo();
 			
             // if engine isn't already initialised, initialise it
-			if (engineInit == false) {
+			if (engineInit == false) 
 				engineInit = true;
-			}
+			
 			// if we can upgrade, let's do so
-			if (isupgraded && isJet) {
+			if (isupgraded && isJet) 
 				upgradePartModule ();
-			} else {
+            else 
+            {
                 if (this.HasTechsRequiredToUpgrade() && isJet)
-                {
                     hasrequiredupgrade = true;
-                }
+
 				// if not, use basic propellants
 				propellants = getPropellants (isJet);
 			}
@@ -187,19 +198,24 @@ namespace FNPlugin{
 			//print ("Start Complete");
 		}
 
-		public override void OnUpdate() {
+		public override void OnUpdate() 
+        {
 			//update GUI stuff
 			Fields["engineType"].guiActive = isJet;
-			if (ResearchAndDevelopment.Instance != null && isJet) {
+			if (ResearchAndDevelopment.Instance != null && isJet) 
+            {
 				Events ["RetrofitEngine"].active = !isupgraded && ResearchAndDevelopment.Instance.Science >= upgradeCost && hasrequiredupgrade;
 				upgradeCostStr = ResearchAndDevelopment.Instance.Science.ToString("0") + " / " + upgradeCost;
-			} else {
+			} 
+            else 
 				Events ["RetrofitEngine"].active = false;
-			}
+			
 			Fields["upgradeCostStr"].guiActive = !isupgraded  && hasrequiredupgrade && isJet;
 
-			if (myAttachedEngine != null) {
-				if (myAttachedEngine.isOperational && !IsEnabled) {
+			if (myAttachedEngine != null) 
+            {
+				if (myAttachedEngine.isOperational && !IsEnabled) 
+                {
 					IsEnabled = true;
 					part.force_activate ();
 				}
@@ -207,41 +223,45 @@ namespace FNPlugin{
 			}
 		}
         
-		public void updatePropellantBar() {
+		public void updatePropellantBar() 
+        {
 			//print ("Update Prop Bar");
 			float currentpropellant = 0;
 			float maxpropellant = 0;
 
             List<PartResource> partresources = part.GetConnectedResources(myAttachedEngine.propellants.FirstOrDefault().name).ToList();
 			
-			foreach (PartResource partresource in partresources) {
+			foreach (PartResource partresource in partresources) 
+            {
 				currentpropellant += (float) partresource.amount;
 				maxpropellant += (float)partresource.maxAmount;
 			}
 
-			if (fuel_gauge != null  && fuel_gauge.infoBoxRef != null) {
-
-				if (myAttachedEngine.isOperational) {
-					if (!fuel_gauge.infoBoxRef.expanded) {
+			if (fuel_gauge != null  && fuel_gauge.infoBoxRef != null) 
+            {
+				if (myAttachedEngine.isOperational) 
+                {
+					if (!fuel_gauge.infoBoxRef.expanded) 
 						fuel_gauge.infoBoxRef.Expand ();
-					}
+					
 					fuel_gauge.length = 2;
-					if (maxpropellant > 0) {
+					if (maxpropellant > 0) 
 						fuel_gauge.SetValue (currentpropellant / maxpropellant);
-					} else {
+					else
 						fuel_gauge.SetValue (0);
-					}
-				} else {
-					if (!fuel_gauge.infoBoxRef.collapsed) {
+				} 
+                else 
+                {
+					if (!fuel_gauge.infoBoxRef.collapsed) 
 						fuel_gauge.infoBoxRef.Collapse ();
-					}
 				}
 			}
 
 			//print ("Update Prop Bar Complete");
 		}
 
-		public void setupPropellants() {
+		public void setupPropellants() 
+        {
 			ConfigNode chosenpropellant = propellants[fuel_mode];
 			ConfigNode[] assprops = chosenpropellant.GetNodes("PROPELLANT");
 			List<Propellant> list_of_propellants = new List<Propellant>();
@@ -252,22 +272,26 @@ namespace FNPlugin{
 				ispMultiplier = float.Parse(chosenpropellant.GetValue("ispMultiplier"));
 				isLFO = bool.Parse(chosenpropellant.GetValue("isLFO"));
 				currentpropellant_is_jet = false;
-				if(chosenpropellant.HasValue("isJet")) {
+				if (chosenpropellant.HasValue("isJet")) 
 					currentpropellant_is_jet = bool.Parse(chosenpropellant.GetValue("isJet"));
-				}
+
 				//print (currentpropellant_is_jet);
 
 				Propellant curprop = new Propellant();
 				curprop.Load(prop_node);
-				if (curprop.drawStackGauge && HighLogic.LoadedSceneIsFlight) {
+				if (curprop.drawStackGauge && HighLogic.LoadedSceneIsFlight) 
+                {
 					curprop.drawStackGauge = false;
-					if (currentpropellant_is_jet) {
+
+					if (currentpropellant_is_jet) 
 						fuel_gauge.SetMessage("Atmosphere");
-					}else {
+					else 
+                    {
 						fuel_gauge.SetMessage(curprop.name);
                         myAttachedEngine.thrustPercentage = 100;
                         part.temperature = 1;
 					}
+
 					fuel_gauge.SetMsgBgColor(XKCDColors.DarkLime);
 					fuel_gauge.SetMsgTextColor(XKCDColors.ElectricLime);
 					fuel_gauge.SetProgressBarColor(XKCDColors.Yellow);
@@ -278,33 +302,36 @@ namespace FNPlugin{
 			}
             
 			// update the engine with the new propellants
-			if (PartResourceLibrary.Instance.GetDefinition(list_of_propellants[0].name) != null) {
+			if (PartResourceLibrary.Instance.GetDefinition(list_of_propellants[0].name) != null) 
+            {
 				myAttachedEngine.propellants.Clear();
 				myAttachedEngine.propellants = list_of_propellants;
 				myAttachedEngine.SetupPropellant();
 			}
 
-            if (HighLogic.LoadedSceneIsFlight) { // you can have any fuel you want in the editor but not in flight
+            if (HighLogic.LoadedSceneIsFlight) 
+            { // you can have any fuel you want in the editor but not in flight
                 // should we switch to another propellant because we have none of this one?
                 bool next_propellant = false;
                 List<Propellant> curEngine_propellants_list = new List<Propellant>();
                 curEngine_propellants_list = myAttachedEngine.propellants;
-                foreach (Propellant curEngine_propellant in curEngine_propellants_list) {
+                foreach (Propellant curEngine_propellant in curEngine_propellants_list) 
+                {
                     List<PartResource> partresources = part.GetConnectedResources(curEngine_propellant.name).ToList();
 
-                    if (partresources.Count == 0 || !PartResourceLibrary.Instance.resourceDefinitions.Contains(list_of_propellants[0].name)) {
+                    if (partresources.Count == 0 || !PartResourceLibrary.Instance.resourceDefinitions.Contains(list_of_propellants[0].name)) 
                         next_propellant = true;
-                    }
                 }
 
                 // do the switch if needed
-                if (next_propellant && fuel_mode != 1) {
+                if (next_propellant && fuel_mode != 1) 
                     TogglePropellant();
-                }
-            } else {
-                if (!PartResourceLibrary.Instance.resourceDefinitions.Contains(list_of_propellants[0].name) && fuel_mode != 1) { // Still ignore propellants that don't exist
+            } 
+            else 
+            {
+                if (!PartResourceLibrary.Instance.resourceDefinitions.Contains(list_of_propellants[0].name) && fuel_mode != 1) // Still ignore propellants that don't exist
                     TogglePropellant();
-                }
+                
                 estimateEditorPerformance(); // update editor estimates
             }
 
@@ -320,8 +347,8 @@ namespace FNPlugin{
 			if (!currentpropellant_is_jet) 
             {
 				minISP = maxISP * 0.4f;
-                newISP.Add(0, Mathf.Min(maxISP, 2997.13f), 0, 0);
-                newISP.Add(1, Mathf.Min(minISP, 2997.13f), 0, 0);
+                newISP.Add(0, Mathf.Min(maxISP, PluginHelper.MaxThermalNozzleIsp), 0, 0);
+                newISP.Add(1, Mathf.Min(minISP, PluginHelper.MaxThermalNozzleIsp), 0, 0);
 				myAttachedEngine.useVelocityCurve = false;
 				myAttachedEngine.useEngineResponseTime = false;
 			} 
@@ -333,10 +360,10 @@ namespace FNPlugin{
 					if (maxISP > 300) 
 						maxISP = maxISP / 2.5f;
 				}
-                newISP.Add(0, Mathf.Min(maxISP * 4.0f / 5.0f, 2997.13f));
-                newISP.Add(0.15f, Mathf.Min(maxISP, 2997.13f));
-                newISP.Add(0.3f, Mathf.Min(maxISP * 4.0f / 5.0f, 2997.13f));
-                newISP.Add(1, Mathf.Min(maxISP * 2.0f / 3.0f, 2997.13f));
+                newISP.Add(0, Mathf.Min(maxISP * 4.0f / 5.0f, PluginHelper.MaxThermalNozzleIsp));
+                newISP.Add(0.15f, Mathf.Min(maxISP, PluginHelper.MaxThermalNozzleIsp));
+                newISP.Add(0.3f, Mathf.Min(maxISP * 4.0f / 5.0f, PluginHelper.MaxThermalNozzleIsp));
+                newISP.Add(1, Mathf.Min(maxISP * 2.0f / 3.0f, PluginHelper.MaxThermalNozzleIsp));
 				vCurve.Add(0, 1.0f);
 				vCurve.Add((float)(maxISP*g0*1.0/3.0), 1.0f);
 				vCurve.Add((float)(maxISP*g0), 1.0f);
@@ -553,11 +580,7 @@ namespace FNPlugin{
             if (this.HasTechsRequiredToUpgrade())
                 upgraded = true;
 
-			ConfigNode[] prop_nodes;
-			if(upgraded && isJet) 
-				prop_nodes = getPropellantsHybrid();
-			else
-				prop_nodes = getPropellants(isJet);
+            ConfigNode[] prop_nodes = upgraded && isJet ? getPropellantsHybrid() : getPropellants(isJet);
 			
 			string return_str = "Thrust: Variable\n";
 			foreach (ConfigNode propellant_node in prop_nodes) 
@@ -576,39 +599,34 @@ namespace FNPlugin{
 
 		// Static Methods
 		// Amount of intake air available to use of a particular resource type
-		public static double getIntakeAvailable(Vessel vess, string resourcename) {
+		public static double getIntakeAvailable(Vessel vess, string resourcename) 
+        {
 			List<FNNozzleController> nozzles = vess.FindPartModulesImplementing<FNNozzleController> ();
 			bool updating = true;
-			foreach (FNNozzleController nozzle in nozzles) {
-				if (!nozzle.static_updating) {
+			foreach (FNNozzleController nozzle in nozzles) 
+            {
+				if (!nozzle.static_updating) 
+                {
 					updating = false;
 					break;
 				}
 			}
 
-			if (updating) {
-				foreach (FNNozzleController nozzle in nozzles) {
-					nozzle.static_updating = false;
-				}
-
+			if (updating) 
+            {
+                nozzles.ForEach(nozzle => nozzle.static_updating = false);
 				List<PartResource> partresources = vess.rootPart.GetConnectedResources (resourcename).ToList();
 				double currentintakeatm = 0;
-				foreach (PartResource partresource in partresources) {
-					currentintakeatm += partresource.amount;
-				}
+                partresources.ForEach(partresource => currentintakeatm += partresource.amount);
 
-				if (intake_amounts.ContainsKey (resourcename)) {
+				if (intake_amounts.ContainsKey (resourcename)) 
 					intake_amounts [resourcename] = currentintakeatm;
-				} else {
-					intake_amounts.Add (resourcename, currentintakeatm);
-				}
-
+				else
+				    intake_amounts.Add (resourcename, currentintakeatm);
 			}
 
-			if (intake_amounts.ContainsKey (resourcename)) {
-				double intake_to_return = Math.Max (intake_amounts [resourcename], 0);
-				return intake_to_return;
-			}
+			if (intake_amounts.ContainsKey (resourcename)) 
+                return Math.Max(intake_amounts[resourcename], 0);
 
 			return 0.00001;
 		}
@@ -621,15 +639,13 @@ namespace FNPlugin{
 			foreach (FNNozzleController nozzle in nozzles) 
             {
 				ConfigNode[] prop_node = nozzle.getPropellants ();
-				if (prop_node != null) {
-					ConfigNode[] assprops = prop_node [nozzle.fuel_mode].GetNodes ("PROPELLANT");
-					if (prop_node [nozzle.fuel_mode] != null) {
-						if (assprops [0].GetValue ("name").Equals (resourcename)) {
-							if (nozzle.getNozzleFlowRate () > 0) {
-								engines++;
-							}
-						}
-					}
+                if (prop_node != null && prop_node[nozzle.fuel_mode] != null) 
+                {
+                    ConfigNode[] assprops = prop_node[nozzle.fuel_mode].GetNodes("PROPELLANT");
+                    if (assprops[0].GetValue("name").Equals(resourcename) && nozzle.getNozzleFlowRate() > 0)
+                    {
+                        engines++;
+                    }
 				}
 			}
 			return engines;
@@ -646,20 +662,22 @@ namespace FNPlugin{
 				ConfigNode[] prop_node = nozzle.getPropellants ();
 				if (prop_node != null) {
 					ConfigNode[] assprops = prop_node [nozzle.fuel_mode].GetNodes ("PROPELLANT");
-					if (prop_node [nozzle.fuel_mode] != null) {
-						if (assprops [0].GetValue ("name").Equals (resourcename)) {
-							if (!nozzle.static_updating2) {
+					if (prop_node [nozzle.fuel_mode] != null) 
+                    {
+						if (assprops [0].GetValue ("name").Equals (resourcename)) 
+                        {
+							if (!nozzle.static_updating2) 
 								updating = false;
-							}
-							if (nozzle.getNozzleFlowRate () > 0) {
+							
+							if (nozzle.getNozzleFlowRate () > 0) 
 								engines++;
-							}
 						}
 					}
 				}
 			}
 
-			if (updating) {
+			if (updating) 
+            {
 				double enum_rate = 0;
 				foreach (FNNozzleController nozzle in nozzles) 
                 {
@@ -706,11 +724,12 @@ namespace FNPlugin{
         {
             double coretempthreshold = PluginHelper.TrustCoreTempThreshold;
             double lowcoretempbase = PluginHelper.LowCoreTempBaseTrust;
-            double highcoretempdiv = PluginHelper.HighCoreTempTrustDivider;
 
-            return coretempthreshold <= 0 ? 1.0 : myAttachedReactor.CoreTemperature < coretempthreshold
-                ? (myAttachedReactor.CoreTemperature + lowcoretempbase) / (coretempthreshold + lowcoretempbase)
-                : 1.0 + (myAttachedReactor.CoreTemperature - coretempthreshold) / highcoretempdiv;
+            return coretempthreshold <= 0 
+                ? 1.0 
+                : myAttachedReactor.CoreTemperature < coretempthreshold
+                    ? (myAttachedReactor.CoreTemperature + lowcoretempbase) / (coretempthreshold + lowcoretempbase)
+                    : 1.0 + PluginHelper.HighCoreTempTrustMult * Math.Max(Math.Log10(myAttachedReactor.CoreTemperature / coretempthreshold), 0);
         }
 
         private double GetPowerTrustModifier()
@@ -737,13 +756,10 @@ namespace FNPlugin{
             ConfigNode[] propellantlist = GameDatabase.Instance.GetConfigNodes("ATMOSPHERIC_NTR_PROPELLANT");
             ConfigNode[] propellantlist2 = GameDatabase.Instance.GetConfigNodes("BASIC_NTR_PROPELLANT");
             propellantlist = propellantlist.Concat(propellantlist2).ToArray();
-            if (propellantlist == null || propellantlist2 == null) {
+            if (propellantlist == null || propellantlist2 == null) 
                 PluginHelper.showInstallationErrorMessage();
-            }
+            
             return propellantlist;
         }
-
-
-
 	}
 }
