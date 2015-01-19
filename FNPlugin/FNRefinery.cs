@@ -233,7 +233,8 @@ namespace FNPlugin {
             }
         }
 
-        public override void OnFixedUpdate() {
+        public override void OnFixedUpdate() 
+        {
             if (IsEnabled) {
                 if (active_mode == 0) { // Fuel Reprocessing
                     double electrical_power_provided = consumeFNResource(reprocessor.PowerRequirements, FNResourceManager.FNRESOURCE_MEGAJOULES);
@@ -345,27 +346,51 @@ namespace FNPlugin {
                         }
                     }
 
-                } else if (active_mode == 7) {
-                    if (FlightGlobals.getStaticPressure(vessel.transform.position) * ORSAtmosphericResourceHandler.getAtmosphericResourceContentByDisplayName(vessel.mainBody.flightGlobalsIndex, "Nitrogen") >= 0.1) {
+                } 
+                else if (active_mode == 7) 
+                {
+
+                    bool atmosphereNitrogenIsAvailable = false;
+                    float nitrogen_available = 0;
+
+                    if ((FlightGlobals.getStaticPressure(vessel.transform.position) * ORSAtmosphericResourceHandler.getAtmosphericResourceContentByDisplayName(vessel.mainBody.flightGlobalsIndex, "Nitrogen") >= 0.1))
+                    {
+                        atmosphereNitrogenIsAvailable = true;
+                    }
+                    else
+                    {
+                        List<PartResource> resourcesWithNitrogen = part.GetConnectedResources(InterstellarResourcesConfiguration.Instance.Nitrogen).ToList();
+                        nitrogen_available = (float)resourcesWithNitrogen.Sum(res => res.amount);
+                    }
+
+                    if (atmosphereNitrogenIsAvailable || nitrogen_available > 0)
+                    {
                         double density_ammonia = PartResourceLibrary.Instance.GetDefinition(InterstellarResourcesConfiguration.Instance.Ammonia).density;
                         double density_h = PartResourceLibrary.Instance.GetDefinition(InterstellarResourcesConfiguration.Instance.HydrogenPeroxide).density;
                         double electrical_power_provided = consumeFNResource((PluginHelper.BaseHaberProcessPowerConsumption) * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
                         electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BaseHaberProcessPowerConsumption);
                         double hydrogen_rate_t = electrical_power_provided / PluginHelper.HaberProcessEnergyPerTon * GameConstants.ammoniaHydrogenFractionByMass / TimeWarp.fixedDeltaTime;
                         double ammonia_rate_to_add_t = ORSHelper.fixedRequestResource(part, InterstellarResourcesConfiguration.Instance.Hydrogen, hydrogen_rate_t * TimeWarp.fixedDeltaTime / density_h) * density_h / GameConstants.ammoniaHydrogenFractionByMass / TimeWarp.fixedDeltaTime;
-                        if (ammonia_rate_to_add_t > 0) {
+                        
+                        double nitrogen_rate_to_add_t = atmosphereNitrogenIsAvailable ? 1 :
+                            ORSHelper.fixedRequestResource(part, InterstellarResourcesConfiguration.Instance.Nitrogen, hydrogen_rate_t * TimeWarp.fixedDeltaTime / density_h) * density_h / GameConstants.ammoniaHydrogenFractionByMass / TimeWarp.fixedDeltaTime;
+
+                        if (ammonia_rate_to_add_t > 0 && nitrogen_rate_to_add_t > 0) 
                             ammonia_rate_d = -ORSHelper.fixedRequestResource(part, InterstellarResourcesConfiguration.Instance.Ammonia, -ammonia_rate_to_add_t * TimeWarp.fixedDeltaTime / density_ammonia) * density_ammonia / TimeWarp.fixedDeltaTime;
-                        } else {
-                            if (electrical_power_ratio > 0) {
+                        else 
+                        {
+                            if (electrical_power_ratio > 0) 
+                            {
                                 ScreenMessages.PostScreenMessage("Hydrogen is required to perform the Haber Process.", 5.0f, ScreenMessageStyle.UPPER_CENTER);
                                 IsEnabled = false;
                             }
                         }
-                    } else {
+                    } 
+                    else
+                    {
                         ScreenMessages.PostScreenMessage("Ambient Nitrogen Insufficient.", 5.0f, ScreenMessageStyle.UPPER_CENTER);
                         IsEnabled = false;
                     }
-
                 }
             } else {
                 

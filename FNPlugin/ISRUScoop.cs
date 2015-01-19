@@ -34,7 +34,8 @@ namespace FNPlugin {
         }
 
         [KSPEvent(guiActive = true, guiName = "Toggle Resource", active = true)]
-        public void ToggleResource() {
+        public void ToggleResource() 
+        {
             currentresource++;
 
             if (ORSAtmosphericResourceHandler.getAtmosphericResourceName(vessel.mainBody.flightGlobalsIndex, currentresource) == null && ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource) > 0 && currentresource != 0) {
@@ -66,7 +67,8 @@ namespace FNPlugin {
         }
 
         [KSPAction("Toggle Resource")]
-        public void ToggleToggleResourceAction(KSPActionParam param) {
+        public void ToggleToggleResourceAction(KSPActionParam param) 
+        {
             ToggleResource();
         }
 
@@ -92,21 +94,24 @@ namespace FNPlugin {
         }
 
         public override void OnFixedUpdate() {
-            if (scoopIsEnabled) {
+            if (scoopIsEnabled) 
+            {
                 string atmospheric_resource_name = ORSAtmosphericResourceHandler.getAtmosphericResourceName(vessel.mainBody.flightGlobalsIndex, currentresource);
-                if (atmospheric_resource_name != null) {
+                if (atmospheric_resource_name != null) 
+                {
                     double resourcedensity = PartResourceLibrary.Instance.GetDefinition(atmospheric_resource_name).density;
                     double respcent = ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
                     //double resourcedensity = PartResourceLibrary.Instance.GetDefinition(PluginHelper.atomspheric_resources_tocollect[currentresource]).density;
                     //double respcent = PluginHelper.getAtmosphereResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
 
-                    double airdensity = part.vessel.atmDensity / 1000;
+                    double airdensity = part.vessel.atmDensity / 1000.0;
                     double powerrequirements = scoopair / 0.15f * 6f;
 
                     double airspeed = part.vessel.srf_velocity.magnitude + 40.0;
                     double air = airspeed * airdensity * scoopair / resourcedensity;
 
-                    if (respcent > 0 && vessel.altitude <= PluginHelper.getMaxAtmosphericAltitude(vessel.mainBody)) {
+                    if (respcent > 0 && vessel.altitude <= PluginHelper.getMaxAtmosphericAltitude(vessel.mainBody)) 
+                    {
                         double scoopedAtm = air * respcent;
 
                         float powerreceived = Math.Max(consumeFNResource(powerrequirements * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES), 0);
@@ -116,9 +121,7 @@ namespace FNPlugin {
                         resflowf = (float)ORSHelper.fixedRequestResource(part,atmospheric_resource_name, -scoopedAtm * powerpcnt * TimeWarp.fixedDeltaTime);
                         resflowf = -resflowf / TimeWarp.fixedDeltaTime;
                     }
-                } else {
-
-                }
+                } 
             }
         }
 
