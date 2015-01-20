@@ -438,7 +438,7 @@ namespace FNPlugin {
                     if (renderer.material.GetTexture("_Emissive") == null)
                         renderer.material.SetTexture("_Emissive", GameDatabase.Instance.GetTexture("WarpPlugin/Parts/Electrical/RadialHeatRadiator/d_glow", false));
 
-                    Debug.Log("rd _Emissive: " + renderer.material.GetTexture("_Emissive"));
+                    //Debug.Log("rd _Emissive: " + renderer.material.GetTexture("_Emissive"));
 
                 } else if (part.name.StartsWith("LargeFlatRadiator"))
                 {
