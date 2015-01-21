@@ -6,8 +6,10 @@ using System.Linq;
 using System.Text;
 using ORSv1_4_3::OpenResourceSystem;
 
-namespace FNPlugin {
-    class ISRUScoop : FNResourceSuppliableModule {
+namespace FNPlugin 
+{
+    class ISRUScoop : FNResourceSuppliableModule 
+    {
         [KSPField(isPersistant = true)]
         public bool scoopIsEnabled = false;
         [KSPField(isPersistant = true)]
@@ -38,13 +40,11 @@ namespace FNPlugin {
         {
             currentresource++;
 
-            if (ORSAtmosphericResourceHandler.getAtmosphericResourceName(vessel.mainBody.flightGlobalsIndex, currentresource) == null && ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource) > 0 && currentresource != 0) {
+            if (ORSAtmosphericResourceHandler.getAtmosphericResourceName(vessel.mainBody.flightGlobalsIndex, currentresource) == null && ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource) > 0 && currentresource != 0) 
                 ToggleResource();
-            }
-
-            if (currentresource >= ORSAtmosphericResourceHandler.getAtmosphericCompositionForBody(vessel.mainBody.flightGlobalsIndex).Count) {
+            
+            if (currentresource >= ORSAtmosphericResourceHandler.getAtmosphericCompositionForBody(vessel.mainBody.flightGlobalsIndex).Count) 
                 currentresource = 0;
-            }
         }
 
         [KSPAction("Activate Scoop")]
@@ -58,12 +58,12 @@ namespace FNPlugin {
         }
 
         [KSPAction("Toggle Scoop")]
-        public void ToggleScoopAction(KSPActionParam param) {
-            if (scoopIsEnabled) {
+        public void ToggleScoopAction(KSPActionParam param) 
+        {
+            if (scoopIsEnabled) 
                 DisableScoop();
-            } else {
+            else 
                 ActivateScoop();
-            }
         }
 
         [KSPAction("Toggle Resource")]
@@ -72,14 +72,16 @@ namespace FNPlugin {
             ToggleResource();
         }
 
-        public override void OnStart(PartModule.StartState state) {
+        public override void OnStart(PartModule.StartState state) 
+        {
             Actions["ToggleToggleResourceAction"].guiName = Events["ToggleResource"].guiName = String.Format("Toggle Resource");
 
             if (state == StartState.Editor) { return; }
             this.part.force_activate();
         }
 
-        public override void OnUpdate() {
+        public override void OnUpdate() 
+        {
             Events["ActivateScoop"].active = !scoopIsEnabled;
             Events["DisableScoop"].active = scoopIsEnabled;
             Events["ToggleResource"].active = scoopIsEnabled;
@@ -87,17 +89,18 @@ namespace FNPlugin {
             Fields["currentresourceStr"].guiActive = scoopIsEnabled;
             double respcent = ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource)*100;
             string resname = ORSAtmosphericResourceHandler.getAtmosphericResourceDisplayName(vessel.mainBody.flightGlobalsIndex, currentresource);
-            if (resname != null) {
+            if (resname != null) 
                 currentresourceStr = resname + "(" + respcent + "%)";
-            }
+            
             resflow = resflowf.ToString("0.0000");
         }
 
-        public override void OnFixedUpdate() {
+        public override void OnFixedUpdate() 
+        {
             if (scoopIsEnabled) 
             {
                 string atmospheric_resource_name = ORSAtmosphericResourceHandler.getAtmosphericResourceName(vessel.mainBody.flightGlobalsIndex, currentresource);
-                if (atmospheric_resource_name != null) 
+                if (atmospheric_resource_name != null)
                 {
                     double resourcedensity = PartResourceLibrary.Instance.GetDefinition(atmospheric_resource_name).density;
                     double respcent = ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
@@ -110,7 +113,7 @@ namespace FNPlugin {
                     double airspeed = part.vessel.srf_velocity.magnitude + 40.0;
                     double air = airspeed * airdensity * scoopair / resourcedensity;
 
-                    if (respcent > 0 && vessel.altitude <= PluginHelper.getMaxAtmosphericAltitude(vessel.mainBody)) 
+                    if (respcent > 0 && vessel.altitude <= PluginHelper.getMaxAtmosphericAltitude(vessel.mainBody))
                     {
                         double scoopedAtm = air * respcent;
 
@@ -118,10 +121,14 @@ namespace FNPlugin {
                         float powerpcnt = (float)(powerreceived / powerrequirements / TimeWarp.fixedDeltaTime);
 
                         //resflowf = (float)part.RequestResource(atmospheric_resource_name, -scoopedAtm * powerpcnt * TimeWarp.fixedDeltaTime);
-                        resflowf = (float)ORSHelper.fixedRequestResource(part,atmospheric_resource_name, -scoopedAtm * powerpcnt * TimeWarp.fixedDeltaTime);
+                        resflowf = (float)ORSHelper.fixedRequestResource(part, atmospheric_resource_name, -scoopedAtm * powerpcnt * TimeWarp.fixedDeltaTime);
                         resflowf = -resflowf / TimeWarp.fixedDeltaTime;
                     }
-                } 
+                    else
+                        resflowf = 0;
+                }
+                else
+                    resflowf = 0;
             }
         }
 
