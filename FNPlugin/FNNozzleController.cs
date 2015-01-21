@@ -342,7 +342,9 @@ namespace FNPlugin{
 			// recaculate ISP based on power and core temp available
 			FloatCurve newISP = new FloatCurve();
 			FloatCurve vCurve = new FloatCurve ();
-			maxISP = (float)(Math.Sqrt ((double)myAttachedReactor.CoreTemperature) * isp_temp_rat * ispMultiplier);
+
+            float ispModifier = (PluginHelper.IspNtrPropellantModifierBase + ispMultiplier) / (1 + PluginHelper.IspNtrPropellantModifierBase);
+            maxISP = (float)(Math.Sqrt((double)myAttachedReactor.CoreTemperature) * isp_temp_rat * ispModifier);
             
 			if (!currentpropellant_is_jet) 
             {
@@ -428,7 +430,8 @@ namespace FNPlugin{
                 //        attached_reactor_upgraded = true;
                 //    }
                 //}
-                maxISP = (float)(Math.Sqrt((double)myAttachedReactor.CoreTemperature) * isp_temp_rat * ispMultiplier);
+                float ispModifier = (PluginHelper.IspNtrPropellantModifierBase + ispMultiplier) / (1 + PluginHelper.IspNtrPropellantModifierBase);
+                maxISP = (float)(Math.Sqrt((double)myAttachedReactor.CoreTemperature) * isp_temp_rat * ispModifier);
                 minISP = maxISP * 0.4f;
                 atmospherecurve.Add(0, maxISP, 0, 0);
                 atmospherecurve.Add(1, minISP, 0, 0);

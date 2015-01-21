@@ -60,10 +60,7 @@ namespace FNPlugin
         }
 
         protected static double _gravityConstant = GameConstants.STANDARD_GRAVITY; 
-        public static double GravityConstant
-        {
-            get { return _gravityConstant; }
-        }
+        public static double GravityConstant { get { return _gravityConstant; } }
 
         protected static double _ispCoreTempMult = GameConstants.IspCoreTemperatureMultiplier;
         public static double IspCoreTempMult { get { return _ispCoreTempMult; } }
@@ -138,6 +135,8 @@ namespace FNPlugin
 
         
         //----------------------------------------------------------------------------------------------
+        protected static float _ispNtrPropellantModifierBase = 0;
+        public static float IspNtrPropellantModifierBase { get { return _ispNtrPropellantModifierBase; } }
 
         protected static float _maxThermalNozzleIsp = GameConstants.MaxThermalNozzleIsp;
         public static float MaxThermalNozzleIsp { get { return _maxThermalNozzleIsp; } }
@@ -559,6 +558,14 @@ namespace FNPlugin
                         PluginHelper._powerConsumptionMultiplier = double.Parse(plugin_settings.GetValue("PowerConsumptionMultiplier"));
                         Debug.Log("[KSP Interstellar] Base Power Consumption set to: " + PluginHelper.PowerConsumptionMultiplier.ToString("0.0"));
                     }
+                    if (plugin_settings.HasValue("IspNtrPropellantModifierBase"))
+                    {
+                        PluginHelper._ispNtrPropellantModifierBase = float.Parse(plugin_settings.GetValue("IspNtrPropellantModifierBase"));
+                        Debug.Log("[KSP Interstellar] Base Power Consumption set to: " + PluginHelper.IspNtrPropellantModifierBase.ToString("0.0"));
+                    }
+
+
+                    
 
                     resources_configured = true;
                 }
