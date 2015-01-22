@@ -59,101 +59,101 @@ namespace FNPlugin
             get {  return KSPUtil.ApplicationRootPath + "GameData/WarpPlugin/WarpPluginSettings.cfg"; }
         }
 
-        protected static double _gravityConstant = GameConstants.STANDARD_GRAVITY; 
+		private static double _gravityConstant = GameConstants.STANDARD_GRAVITY; 
         public static double GravityConstant { get { return _gravityConstant; } }
 
-        protected static double _ispCoreTempMult = GameConstants.IspCoreTemperatureMultiplier;
+		private static double _ispCoreTempMult = GameConstants.IspCoreTemperatureMultiplier;
         public static double IspCoreTempMult { get { return _ispCoreTempMult; } }
 
-        protected static double _lowCoreTempBaseTrust = 0;
+		private static double _lowCoreTempBaseTrust = 0;
         public static double LowCoreTempBaseTrust { get { return _lowCoreTempBaseTrust; } }
 
-        protected static double _highCoreTempTrustMult = GameConstants.HighCoreTempTrustMultiplier;
+		private static double _highCoreTempTrustMult = GameConstants.HighCoreTempTrustMultiplier;
         public static double HighCoreTempTrustMult { get { return _highCoreTempTrustMult; } }
 
-        protected static double _trustCoreTempThreshold = 0;
+		private static double _trustCoreTempThreshold = 0;
         public static double TrustCoreTempThreshold { get { return _trustCoreTempThreshold; } }
 
-        protected static double _globalThermalNozzlePowerMaxTrustMult = 1;
+		private static double _globalThermalNozzlePowerMaxTrustMult = 1;
         public static double GlobalThermalNozzlePowerMaxTrustMult { get { return _globalThermalNozzlePowerMaxTrustMult; } }
 
-        protected static double _globalMagneticNozzlePowerMaxTrustMult = 1;
+		private static double _globalMagneticNozzlePowerMaxTrustMult = 1;
         public static double GlobalMagneticNozzlePowerMaxTrustMult { get { return _globalMagneticNozzlePowerMaxTrustMult; } }
 
-        protected static double _globalElectricEnginePowerMaxTrustMult = 1;
+		private static double _globalElectricEnginePowerMaxTrustMult = 1;
         public static double GlobalElectricEnginePowerMaxTrustMult { get { return _globalElectricEnginePowerMaxTrustMult; } }
 
-        protected static float _maxPowerDrawForExoticMatterMult = 1;
+		private static float _maxPowerDrawForExoticMatterMult = 1;
         public static float MaxPowerDrawForExoticMatterMult { get { return _maxPowerDrawForExoticMatterMult; } }
 
-        protected static double _lfoFuelTrustModifier = GameConstants.LfoFuelTrustModifier;
+		private static double _lfoFuelTrustModifier = GameConstants.LfoFuelTrustModifier;
         public static double LfoFuelTrustModifier { get { return _lfoFuelTrustModifier; } }
 
         //------------------------------------------------------------------------------------------
 
-        protected static double _basePowerConsumption = GameConstants.basePowerConsumption;
-        public static double BasePowerConsumption { get { return _powerConsumptionMultiplier * _basePowerConsumption; } }
+		private static double _basePowerConsumption = GameConstants.basePowerConsumption;
+		public static double BasePowerConsumption { get { return PowerConsumptionMultiplier * _basePowerConsumption; } }
 
-        protected static double _baseAMFPowerConsumption = GameConstants.baseAMFPowerConsumption;
-        public static double BaseAMFPowerConsumption { get { return _powerConsumptionMultiplier * _baseAMFPowerConsumption; } }
+		private static double _baseAMFPowerConsumption = GameConstants.baseAMFPowerConsumption;
+		public static double BaseAMFPowerConsumption { get { return PowerConsumptionMultiplier * _baseAMFPowerConsumption; } }
 
-        protected static double _baseCentriPowerConsumption = GameConstants.baseCentriPowerConsumption;
-        public static double BaseCentriPowerConsumption { get { return _powerConsumptionMultiplier * _baseCentriPowerConsumption; } }
+		private static double _baseCentriPowerConsumption = GameConstants.baseCentriPowerConsumption;
+		public static double BaseCentriPowerConsumption { get { return PowerConsumptionMultiplier * _baseCentriPowerConsumption; } }
 
-        protected static double _baseELCPowerConsumption = GameConstants.baseELCPowerConsumption;
-        public static double BaseELCPowerConsumption { get { return _powerConsumptionMultiplier * _baseELCPowerConsumption; } }
+		private static double _baseELCPowerConsumption = GameConstants.baseELCPowerConsumption;
+		public static double BaseELCPowerConsumption { get { return PowerConsumptionMultiplier * _baseELCPowerConsumption; } }
 
-        protected static double _baseAnthraquiononePowerConsumption = GameConstants.baseAnthraquiononePowerConsumption;
-        public static double BaseAnthraquiononePowerConsumption { get { return _powerConsumptionMultiplier * _baseAnthraquiononePowerConsumption; } }
+		private static double _baseAnthraquiononePowerConsumption = GameConstants.baseAnthraquiononePowerConsumption;
+		public static double BaseAnthraquiononePowerConsumption { get { return PowerConsumptionMultiplier * _baseAnthraquiononePowerConsumption; } }
 
-        protected static double _basePechineyUgineKuhlmannPowerConsumption = GameConstants.basePechineyUgineKuhlmannPowerConsumption;
-        public static double BasePechineyUgineKuhlmannPowerConsumption { get { return _powerConsumptionMultiplier * _basePechineyUgineKuhlmannPowerConsumption; } }
+		private static double _basePechineyUgineKuhlmannPowerConsumption = GameConstants.basePechineyUgineKuhlmannPowerConsumption;
+		public static double BasePechineyUgineKuhlmannPowerConsumption { get { return PowerConsumptionMultiplier * _basePechineyUgineKuhlmannPowerConsumption; } }
 
-        protected static double _baseHaberProcessPowerConsumption = GameConstants.baseHaberProcessPowerConsumption;
-        public static double BaseHaberProcessPowerConsumption { get { return _powerConsumptionMultiplier * _baseHaberProcessPowerConsumption; } }
+		private static double _baseHaberProcessPowerConsumption = GameConstants.baseHaberProcessPowerConsumption;
+		public static double BaseHaberProcessPowerConsumption { get { return PowerConsumptionMultiplier * _baseHaberProcessPowerConsumption; } }
 
-        protected static double _baseUraniumAmmonolysisPowerConsumption = GameConstants.baseUraniumAmmonolysisPowerConsumption;
-        public static double BaseUraniumAmmonolysisPowerConsumption { get { return _powerConsumptionMultiplier * _baseUraniumAmmonolysisPowerConsumption; } }
+		private static double _baseUraniumAmmonolysisPowerConsumption = GameConstants.baseUraniumAmmonolysisPowerConsumption;
+		public static double BaseUraniumAmmonolysisPowerConsumption { get { return PowerConsumptionMultiplier * _baseUraniumAmmonolysisPowerConsumption; } }
 
         //------------------------------------------------------------------------------------------------
 
-        protected static double _anthraquinoneEnergyPerTon = GameConstants.anthraquinoneEnergyPerTon;
-        public static double AnthraquinoneEnergyPerTon { get { return _powerConsumptionMultiplier * _anthraquinoneEnergyPerTon; } }
+		private static double _anthraquinoneEnergyPerTon = GameConstants.anthraquinoneEnergyPerTon;
+		public static double AnthraquinoneEnergyPerTon { get { return PowerConsumptionMultiplier * _anthraquinoneEnergyPerTon; } }
 
-        protected static double _haberProcessEnergyPerTon = GameConstants.haberProcessEnergyPerTon;
-        public static double HaberProcessEnergyPerTon { get { return _powerConsumptionMultiplier * _haberProcessEnergyPerTon; } }
+		private static double _haberProcessEnergyPerTon = GameConstants.haberProcessEnergyPerTon;
+		public static double HaberProcessEnergyPerTon { get { return PowerConsumptionMultiplier * _haberProcessEnergyPerTon; } }
 
-        protected static double _electrolysisEnergyPerTon = GameConstants.electrolysisEnergyPerTon;
-        public static double ElectrolysisEnergyPerTon { get { return _powerConsumptionMultiplier * _electrolysisEnergyPerTon; } }
+		private static double _electrolysisEnergyPerTon = GameConstants.electrolysisEnergyPerTon;
+		public static double ElectrolysisEnergyPerTon { get { return PowerConsumptionMultiplier * _electrolysisEnergyPerTon; } }
 
-        protected static double _aluminiumElectrolysisEnergyPerTon = GameConstants.aluminiumElectrolysisEnergyPerTon;
-        public static double AluminiumElectrolysisEnergyPerTon { get { return _powerConsumptionMultiplier * _aluminiumElectrolysisEnergyPerTon; } }
+		private static double _aluminiumElectrolysisEnergyPerTon = GameConstants.aluminiumElectrolysisEnergyPerTon;
+		public static double AluminiumElectrolysisEnergyPerTon { get { return PowerConsumptionMultiplier * _aluminiumElectrolysisEnergyPerTon; } }
 
-        protected static double _pechineyUgineKuhlmannEnergyPerTon = GameConstants.pechineyUgineKuhlmannEnergyPerTon;
-        public static double PechineyUgineKuhlmannEnergyPerTon { get { return _powerConsumptionMultiplier * _pechineyUgineKuhlmannEnergyPerTon; } }
+		private static double _pechineyUgineKuhlmannEnergyPerTon = GameConstants.pechineyUgineKuhlmannEnergyPerTon;
+		public static double PechineyUgineKuhlmannEnergyPerTon { get { return PowerConsumptionMultiplier * _pechineyUgineKuhlmannEnergyPerTon; } }
 
 
         
         //----------------------------------------------------------------------------------------------
-        protected static float _ispNtrPropellantModifierBase = 0;
+		private static float _ispNtrPropellantModifierBase = 0;
         public static float IspNtrPropellantModifierBase { get { return _ispNtrPropellantModifierBase; } }
 
-        protected static float _maxThermalNozzleIsp = GameConstants.MaxThermalNozzleIsp;
+		private static float _maxThermalNozzleIsp = GameConstants.MaxThermalNozzleIsp;
         public static float MaxThermalNozzleIsp { get { return _maxThermalNozzleIsp; } }
 
-        protected static double _powerConsumptionMultiplier = 1;
-        public static double PowerConsumptionMultiplier { get { return _powerConsumptionMultiplier; } }
+		private static double _powerConsumptionMultiplier = 1;
+        protected static double PowerConsumptionMultiplier { get { return _powerConsumptionMultiplier; } }
 
-        protected static bool _isPanelHeatingClamped = false;
+		private static bool _isPanelHeatingClamped = false;
         public static bool IsSolarPanelHeatingClamped { get { return _isPanelHeatingClamped; }}
 
-        protected static bool _isThermalDissipationDisabled = false;
+		private static bool _isThermalDissipationDisabled = false;
         public static bool IsThermalDissipationDisabled { get { return _isThermalDissipationDisabled; } }
 
-        protected static bool _isRecieverTempTweaked = false;
+		private static bool _isRecieverTempTweaked = false;
         public static bool IsRecieverCoreTempTweaked { get { return _isRecieverTempTweaked; } }
 
-        protected static bool _limitedWarpTravel = false;
+	    private static bool _limitedWarpTravel = false;
         public static bool LimitedWarpTravel { get { return _limitedWarpTravel; } }
 
         #endregion
