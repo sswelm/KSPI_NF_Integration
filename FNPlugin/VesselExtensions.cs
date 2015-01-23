@@ -32,7 +32,12 @@ namespace FNPlugin
             CelestialBody cur_ref_body = vessel.mainBody;
             CelestialBody crefkerbin = FlightGlobals.fetch.bodies[PluginHelper.REF_BODY_KERBIN];
 
-            ORSPlanetaryResourcePixel res_pixel = ORSPlanetaryResourceMapData.getResourceAvailability(vessel.mainBody.flightGlobalsIndex, InterstellarResourcesConfiguration.Instance.ThoriumTetraflouride, cur_ref_body.GetLatitude(vessel.transform.position), cur_ref_body.GetLongitude(vessel.transform.position));
+            ORSPlanetaryResourcePixel res_pixel = ORSPlanetaryResourceMapData.getResourceAvailability(
+                vessel.mainBody.flightGlobalsIndex, 
+                InterstellarResourcesConfiguration.Instance.ThoriumTetraflouride, 
+                cur_ref_body.GetLatitude(vessel.transform.position), 
+                cur_ref_body.GetLongitude(vessel.transform.position));
+
             double ground_rad = Math.Sqrt(res_pixel.getAmount() * 9e6) / 24 / 365.25 / Math.Max(vessel.altitude / 870, 1);
             
             double proton_rad = cur_ref_body.GetProtonRadiationLevel(FlightGlobals.ship_altitude, FlightGlobals.ship_latitude);

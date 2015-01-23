@@ -156,6 +156,9 @@ namespace FNPlugin
 	    private static bool _limitedWarpTravel = false;
         public static bool LimitedWarpTravel { get { return _limitedWarpTravel; } }
 
+        private static bool _radiationMechanicsDisabled = false;
+        public static bool RadiationMechanicsDisabled { get { return _radiationMechanicsDisabled; } }
+
         #endregion
 
         public static bool hasTech(string techid)
@@ -468,6 +471,11 @@ namespace FNPlugin
                 ConfigNode plugin_settings = GameDatabase.Instance.GetConfigNode("WarpPlugin/WarpPluginSettings/WarpPluginSettings");
                 if (plugin_settings != null)
                 {
+                    if (plugin_settings.HasValue("RadiationMechanicsDisabled"))
+                    {
+                        PluginHelper._radiationMechanicsDisabled = bool.Parse(plugin_settings.GetValue("RadiationMechanicsDisabled"));
+                        Debug.Log("[KSP Interstellar] Radiation Mechanics Disabled set to: " + PluginHelper.RadiationMechanicsDisabled.ToString());
+                    }
                     if (plugin_settings.HasValue("ThermalMechanicsDisabled"))
                     {
                         PluginHelper._isThermalDissipationDisabled = bool.Parse(plugin_settings.GetValue("ThermalMechanicsDisabled"));
@@ -563,8 +571,6 @@ namespace FNPlugin
                         PluginHelper._ispNtrPropellantModifierBase = float.Parse(plugin_settings.GetValue("IspNtrPropellantModifierBase"));
                         Debug.Log("[KSP Interstellar] Base Power Consumption set to: " + PluginHelper.IspNtrPropellantModifierBase.ToString("0.0"));
                     }
-
-
                     
 
                     resources_configured = true;
