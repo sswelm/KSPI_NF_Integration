@@ -16,6 +16,8 @@ namespace FNPlugin {
         public string powerStr;
         [KSPField(isPersistant = false, guiActive = true, guiName = "Science Rate")]
         public string scienceRate;
+        [KSPField(isPersistant = false, guiActive = true, guiName = "Collected Science")]
+        public string collectedScience;
         [KSPField(isPersistant = false, guiActive = true, guiName = "R")]
         public string reprocessingRate;
         [KSPField(isPersistant = false, guiActive = true, guiName = "A")]
@@ -171,7 +173,7 @@ namespace FNPlugin {
                     //anim2 [animName2].normalizedTime = 0f;
                     //anim [animName1].speed = 1f;
                     //anim2 [animName2].speed = 1f;
-                    //anim.Blend (animName1, 0, 0);
+                    //anim.Blend (animName1, 0, 0);global_rate_multipliers
                     //anim2.Blend (animName2, 0, 0);
                     play_down = false;
                 }
@@ -179,22 +181,17 @@ namespace FNPlugin {
                 //anim2.Play ();
             }
 
-            if (IsEnabled && last_active_time != 0) {
+            if (IsEnabled && last_active_time != 0) 
+            {
                 float global_rate_multipliers = 1;
                 crew_capacity_ratio = ((float)part.protoModuleCrew.Count) / ((float)part.CrewCapacity);
                 global_rate_multipliers = global_rate_multipliers * crew_capacity_ratio;
 
-                if (active_mode == 0) { // Science persistence
-                    double now = Planetarium.GetUniversalTime();
-                    double time_diff = now - last_active_time;
-                    float altitude_multiplier = (float)(vessel.altitude / (vessel.mainBody.Radius));
-                    altitude_multiplier = Math.Max(altitude_multiplier, 1);
-
-                    float kerbalResearchSkillFactor = 0;
-                    foreach (ProtoCrewMember proto_crew_member in part.protoModuleCrew) 
-                    {
-                        kerbalResearchSkillFactor += GetKerbalScienceFactor(proto_crew_member) / 2f;
-                    }
+                if (active_mode == 0) // Science persistence
+                { 
+                    double time_diff = Planetarium.GetUniversalTime() - last_active_time;
+                    float altitude_multiplier = Math.Max((float)(vessel.altitude / (vessel.mainBody.Radius)), 1);
+                    float kerbalResearchSkillFactor = part.protoModuleCrew.Sum(proto_crew_member => GetKerbalScienceFactor(proto_crew_member) / 2f);
 
                     double science_to_increment = kerbalResearchSkillFactor * GameConstants.baseScienceRate * time_diff 
                         / GameConstants.EARH_DAY_SECONDS * electrical_power_ratio * global_rate_multipliers * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) 
@@ -203,9 +200,10 @@ namespace FNPlugin {
                     science_to_increment = (double.IsNaN(science_to_increment) || double.IsInfinity(science_to_increment)) ? 0 : science_to_increment;
                     science_to_add += (float)science_to_increment;
 
-                } else if (active_mode == 2) { // Antimatter persistence
-                    double now = Planetarium.GetUniversalTime();
-                    double time_diff = now - last_active_time;
+                }
+                else if (active_mode == 2) // Antimatter persistence
+                { 
+                    double time_diff = Planetarium.GetUniversalTime() - last_active_time;
 
                     List<PartResource> antimatter_resources = part.GetConnectedResources(InterstellarResourcesConfiguration.Instance.Antimatter).ToList();
                     float currentAntimatter_missing = (float) antimatter_resources.Sum(ar => ar.maxAmount-ar.amount);
@@ -218,7 +216,8 @@ namespace FNPlugin {
             }
         }
 
-        public override void OnUpdate() {
+        public override void OnUpdate() 
+        {
             base.OnUpdate();
             Events["BeginResearch"].active = !IsEnabled;
             Events["ReprocessFuel"].active = !IsEnabled;
@@ -227,10 +226,12 @@ namespace FNPlugin {
             Events["ActivateCentrifuge"].active = !IsEnabled && vessel.Splashed;
             Events["StopActivity"].active = IsEnabled;
 
-            if (IsEnabled) {
+            if (IsEnabled) 
+            {
                 //anim [animName1].normalizedTime = 1f;
                 statusTitle = modes[active_mode] + "...";
                 Fields["scienceRate"].guiActive = false;
+                Fields["collectedScience"].guiActive = false;
                 Fields["reprocessingRate"].guiActive = false;
                 Fields["antimatterRate"].guiActive = false;
                 Fields["electrolysisRate"].guiActive = false;
@@ -239,50 +240,64 @@ namespace FNPlugin {
                 Fields["powerStr"].guiActive = true;
 
                 double currentpowertmp = electrical_power_ratio * PluginHelper.BasePowerConsumption;
-                powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BasePowerConsumption.ToString("0.00") + "MW";
-                if (active_mode == 0) { // Research
+                powerStr = currentpowertmp.ToString("0.0000") + "MW / " + PluginHelper.BasePowerConsumption.ToString("0.0000") + "MW";
+                if (active_mode == 0) // Research
+                { 
                     Fields["scienceRate"].guiActive = true;
+                    Fields["collectedScience"].guiActive = true;
                     double scienceratetmp = science_rate_f * GameConstants.EARH_DAY_SECONDS;
-                    scienceRate = scienceratetmp.ToString("0.000") + "/Day";
-                } else if (active_mode == 1) { // Fuel Reprocessing
+                    scienceRate = scienceratetmp.ToString("0.0000") + "/Day";
+                    collectedScience = science_to_add.ToString("0.000000");
+                }
+                else if (active_mode == 1) // Fuel Reprocessing
+                { 
                     Fields["reprocessingRate"].guiActive = true;
-                    float reprocessratetmp = reprocessing_rate_f;
-                    reprocessingRate = reprocessratetmp.ToString("0.0") + " Hours Remaining";
-                } else if (active_mode == 2) { // Antimatter
+                    reprocessingRate = reprocessing_rate_f.ToString("0.0") + " Hours Remaining";
+                }
+                else if (active_mode == 2) // Antimatter
+                { 
                     currentpowertmp = electrical_power_ratio * PluginHelper.BaseAMFPowerConsumption;
                     Fields["antimatterRate"].guiActive = true;
                     Fields["antimatterProductionEfficiency"].guiActive = true;
                     powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BaseAMFPowerConsumption.ToString("0.00") + "MW";
-                    antimatterProductionEfficiency = (anti_factory.getAntimatterProductionEfficiency() * 100).ToString("0.000") + "%";
+                    antimatterProductionEfficiency = (anti_factory.getAntimatterProductionEfficiency() * 100).ToString("0.0000") + "%";
                     double antimatter_rate_per_day = antimatter_rate_f * GameConstants.EARH_DAY_SECONDS;
-                    if (antimatter_rate_per_day > 0.1) {
-                        antimatterRate = (antimatter_rate_per_day).ToString("0.000") + " mg/day";
-                    } else {
-                        if (antimatter_rate_per_day > 0.1e-3) {
-                            antimatterRate = (antimatter_rate_per_day*1e3).ToString("0.000") + " ug/day";
-                        } else {
-                            antimatterRate = (antimatter_rate_per_day*1e6).ToString("0.000") + " ng/day";
-                        }
+                    
+                    if (antimatter_rate_per_day > 0.1) 
+                        antimatterRate = (antimatter_rate_per_day).ToString("0.0000") + " mg/day";
+                    else 
+                    {
+                        if (antimatter_rate_per_day > 0.1e-3) 
+                            antimatterRate = (antimatter_rate_per_day*1e3).ToString("0.0000") + " ug/day";
+                        else 
+                            antimatterRate = (antimatter_rate_per_day*1e6).ToString("0.0000") + " ng/day";
                     }
-                } else if (active_mode == 3) 
-                { // Electrolysis
+                }
+                else if (active_mode == 3) // Electrolysis
+                { 
                     currentpowertmp = electrical_power_ratio * PluginHelper.BaseELCPowerConsumption;
                     Fields["electrolysisRate"].guiActive = true;
                     double electrolysisratetmp = -electrolysis_rate_f * GameConstants.EARH_DAY_SECONDS;
                     electrolysisRate = electrolysisratetmp.ToString("0.0") + "mT/day";
                     powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BaseELCPowerConsumption.ToString("0.00") + "MW";
-                } else if (active_mode == 4) 
-                { // Centrifuge
+                }
+                else if (active_mode == 4) // Centrifuge
+                {
                     currentpowertmp = electrical_power_ratio * PluginHelper.BaseCentriPowerConsumption;
                     Fields["centrifugeRate"].guiActive = true;
                     powerStr = currentpowertmp.ToString("0.00") + "MW / " + PluginHelper.BaseCentriPowerConsumption.ToString("0.00") + "MW";
                     float deut_per_hour = deut_rate_f * 3600;
                     centrifugeRate = deut_per_hour.ToString("0.00") + " Kg Deuterium/Hour";
-                } else {
-
                 }
-            } else {
-                if (play_down) {
+                else
+                { 
+                    // nothing 
+                }
+            } 
+            else 
+            {
+                if (play_down) 
+                {
                     anim[animName1].speed = -1f;
                     anim[animName1].normalizedTime = 1f;
                     anim.Blend(animName1, 2f);
@@ -291,19 +306,21 @@ namespace FNPlugin {
                     anim2.Blend(animName2, 2f);
                     play_down = false;
                 }
+
                 //anim [animName1].normalizedTime = 0f;
                 Fields["scienceRate"].guiActive = false;
+                Fields["collectedScience"].guiActive = false;
                 Fields["reprocessingRate"].guiActive = false;
                 Fields["antimatterRate"].guiActive = false;
                 Fields["powerStr"].guiActive = false;
                 Fields["centrifugeRate"].guiActive = false;
                 Fields["electrolysisRate"].guiActive = false;
                 Fields["antimatterProductionEfficiency"].guiActive = false;
-                if (crew_capacity_ratio > 0) {
+
+                if (crew_capacity_ratio > 0) 
                     statusTitle = "Idle";
-                } else {
+                else 
                     statusTitle = "Not enough crew";
-                }
             }
         }
 
@@ -339,14 +356,8 @@ namespace FNPlugin {
                     electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BasePowerConsumption);
                     global_rate_multipliers = global_rate_multipliers * electrical_power_ratio;
 
-                    float kerbalScienceSkillFactor = 0;
-                    foreach (ProtoCrewMember proto_crew_member in part.protoModuleCrew)
-                    {
-                        kerbalScienceSkillFactor += GetKerbalScienceFactor(proto_crew_member) / 2f;
-                    }
-
-                    float altitude_multiplier = (float)(vessel.altitude / (vessel.mainBody.Radius));
-                    altitude_multiplier = Math.Max(altitude_multiplier, 1);
+                    float kerbalScienceSkillFactor = part.protoModuleCrew.Sum(proto_crew_member => GetKerbalScienceFactor(proto_crew_member) / 2f);
+                    float altitude_multiplier = Math.Max((float)(vessel.altitude / (vessel.mainBody.Radius)), 1);
 
                     science_rate_f = (float)(kerbalScienceSkillFactor * GameConstants.baseScienceRate * PluginHelper.getScienceMultiplier(vessel.mainBody.flightGlobalsIndex, vessel.LandedOrSplashed) 
                         / GameConstants.EARH_DAY_SECONDS * global_rate_multipliers 
@@ -357,8 +368,9 @@ namespace FNPlugin {
                         //ResearchAndDevelopment.Instance.Science = ResearchAndDevelopment.Instance.Science + science_rate_f * TimeWarp.fixedDeltaTime;
                         science_to_add += science_rate_f * TimeWarp.fixedDeltaTime;
                     }
-                } else if (active_mode == 1) 
-                { // Fuel Reprocessing
+                }
+                else if (active_mode == 1) // Fuel Reprocessing
+                { 
                     double electrical_power_provided = consumeFNResource(PluginHelper.BasePowerConsumption * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES);
                     electrical_power_ratio = (float)(electrical_power_provided / TimeWarp.fixedDeltaTime / PluginHelper.BasePowerConsumption);
                     global_rate_multipliers = global_rate_multipliers * electrical_power_ratio;
