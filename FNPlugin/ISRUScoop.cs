@@ -87,10 +87,11 @@ namespace FNPlugin
             Events["ToggleResource"].active = scoopIsEnabled;
             Fields["resflow"].guiActive = scoopIsEnabled;
             Fields["currentresourceStr"].guiActive = scoopIsEnabled;
-            double respcent = ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource)*100;
-            string resname = ORSAtmosphericResourceHandler.getAtmosphericResourceDisplayName(vessel.mainBody.flightGlobalsIndex, currentresource);
-            if (resname != null) 
-                currentresourceStr = resname + "(" + respcent + "%)";
+
+            double resourcePercentage = ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource)*100;
+            string resourceDisplayName = ORSAtmosphericResourceHandler.getAtmosphericResourceDisplayName(vessel.mainBody.flightGlobalsIndex, currentresource);
+            if (resourceDisplayName != null) 
+                currentresourceStr = resourceDisplayName + "(" + resourcePercentage + "%)";
             
             resflow = resflowf.ToString("0.0000");
         }
@@ -103,17 +104,17 @@ namespace FNPlugin
                 if (atmospheric_resource_name != null)
                 {
                     double resourcedensity = PartResourceLibrary.Instance.GetDefinition(atmospheric_resource_name).density;
-                    double respcent = ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
+                    double respcent =  ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
                     //double resourcedensity = PartResourceLibrary.Instance.GetDefinition(PluginHelper.atomspheric_resources_tocollect[currentresource]).density;
                     //double respcent = PluginHelper.getAtmosphereResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
 
-                    double airdensity = part.vessel.atmDensity / 1000.0;
+                    double airdensity = (part.vessel.atmDensity / 1000.0) + PluginHelper.MinAtmosphericAirDensity;  //1e-8f;
                     double powerrequirements = scoopair / 0.15f * 6f;
 
                     double airspeed = part.vessel.srf_velocity.magnitude + 40.0;
                     double air = airspeed * airdensity * scoopair / resourcedensity;
 
-                    if (respcent > 0 && vessel.altitude <= PluginHelper.getMaxAtmosphericAltitude(vessel.mainBody))
+                    if (respcent > 0 && vessel.altitude <= (PluginHelper.getMaxAtmosphericAltitude(vessel.mainBody) * PluginHelper.MaxAtmosphericAltitudeMult))
                     {
                         double scoopedAtm = air * respcent;
 
@@ -125,10 +126,10 @@ namespace FNPlugin
                         resflowf = -resflowf / TimeWarp.fixedDeltaTime;
                     }
                     else
-                        resflowf = 0;
+                        resflowf = 0.0f;
                 }
                 else
-                    resflowf = 0;
+                    resflowf = 0.0f;
             }
         }
 

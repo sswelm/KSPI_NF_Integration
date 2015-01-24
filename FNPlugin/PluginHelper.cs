@@ -59,6 +59,12 @@ namespace FNPlugin
             get {  return KSPUtil.ApplicationRootPath + "GameData/WarpPlugin/WarpPluginSettings.cfg"; }
         }
 
+        private static double _maxAtmosphericAltitudeMult = 1;
+        public static double MaxAtmosphericAltitudeMult { get { return _maxAtmosphericAltitudeMult; } }
+
+        private static double _minAtmosphericAirDensity = 0;
+        public static double MinAtmosphericAirDensity { get { return _minAtmosphericAirDensity; } }
+
 		private static double _gravityConstant = GameConstants.STANDARD_GRAVITY; 
         public static double GravityConstant { get { return _gravityConstant; } }
 
@@ -336,10 +342,8 @@ namespace FNPlugin
 
         public static float getMaxAtmosphericAltitude(CelestialBody body)
         {
-            if (!body.atmosphere)
-            {
-                return 0;
-            }
+            if (!body.atmosphere) return 0;
+
             return (float)-body.atmosphereScaleHeight * 1000.0f * Mathf.Log(1e-6f);
         }
 
@@ -571,7 +575,16 @@ namespace FNPlugin
                         PluginHelper._ispNtrPropellantModifierBase = float.Parse(plugin_settings.GetValue("IspNtrPropellantModifierBase"));
                         Debug.Log("[KSP Interstellar] Base Power Consumption set to: " + PluginHelper.IspNtrPropellantModifierBase.ToString("0.0"));
                     }
-                    
+                    if (plugin_settings.HasValue("MaxAtmosphericAltitudeMult"))
+                    {
+                        PluginHelper._maxAtmosphericAltitudeMult = double.Parse(plugin_settings.GetValue("MaxAtmosphericAltitudeMult"));
+                        Debug.Log("[KSP Interstellar] Maximum Atmospheric Altitude Multiplier set to: " + PluginHelper.MaxAtmosphericAltitudeMult.ToString("0.0"));
+                    }
+                    if (plugin_settings.HasValue("MinAtmosphericAirDensity"))
+                    {
+                        PluginHelper._minAtmosphericAirDensity = double.Parse(plugin_settings.GetValue("MinAtmosphericAirDensity"));
+                        Debug.Log("[KSP Interstellar] Minimum Atmospheric Air Density set to: " + PluginHelper.MinAtmosphericAirDensity.ToString("0.0"));
+                    }
 
                     resources_configured = true;
                 }
