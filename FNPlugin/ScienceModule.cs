@@ -67,7 +67,8 @@ namespace FNPlugin {
         }
 
         [KSPEvent(guiActive = true, guiName = "Begin Research", active = true)]
-        public void BeginResearch() {
+        public void BeginResearch() 
+        {
             if (crew_capacity_ratio == 0) { return; }
             IsEnabled = true;
             active_mode = 0;
@@ -82,7 +83,8 @@ namespace FNPlugin {
         }
 
         [KSPEvent(guiActive = true, guiName = "Reprocess Nuclear Fuel", active = true)]
-        public void ReprocessFuel() {
+        public void ReprocessFuel() 
+        {
             if (crew_capacity_ratio == 0) { return; }
             IsEnabled = true;
             active_mode = 1;
@@ -97,7 +99,8 @@ namespace FNPlugin {
         }
 
         [KSPEvent(guiActive = true, guiName = "Activate Antimatter Factory", active = true)]
-        public void ActivateFactory() {
+        public void ActivateFactory() 
+        {
             if (crew_capacity_ratio == 0) { return; }
             IsEnabled = true;
             active_mode = 2;
@@ -112,7 +115,8 @@ namespace FNPlugin {
         }
 
         [KSPEvent(guiActive = true, guiName = "Activate Electrolysis", active = true)]
-        public void ActivateElectrolysis() {
+        public void ActivateElectrolysis() 
+        {
             if (crew_capacity_ratio == 0) { return; }
             IsEnabled = true;
             active_mode = 3;
@@ -127,7 +131,8 @@ namespace FNPlugin {
         }
 
         [KSPEvent(guiActive = true, guiName = "Activate Centrifuge", active = true)]
-        public void ActivateCentrifuge() {
+        public void ActivateCentrifuge() 
+        {
             if (crew_capacity_ratio == 0) { return; }
             IsEnabled = true;
             active_mode = 4;
@@ -142,12 +147,13 @@ namespace FNPlugin {
         }
 
         [KSPEvent(guiActive = true, guiName = "Stop Current Activity", active = false)]
-        public void StopActivity() {
+        public void StopActivity() 
+        {
             IsEnabled = false;
-
         }
 
-        public override void OnStart(PartModule.StartState state) {
+        public override void OnStart(PartModule.StartState state) 
+        {
             if (state == StartState.Editor) { return; }
             reprocessor = new NuclearFuelReprocessor(part);
             anti_factory = new AntimatterFactory(part);
@@ -343,7 +349,8 @@ namespace FNPlugin {
             return kerbalFactor * (1.1f - (kerbal.stupidity / 5f));
         }
 
-        public override void OnFixedUpdate() {
+        public override void OnFixedUpdate() 
+        {
             float global_rate_multipliers = 1;
             crew_capacity_ratio = ((float)part.protoModuleCrew.Count) / ((float)part.CrewCapacity);
             global_rate_multipliers = global_rate_multipliers * crew_capacity_ratio;
@@ -413,8 +420,10 @@ namespace FNPlugin {
                 }
 
                 last_active_time = (float)Planetarium.GetUniversalTime();
-            } else {
-
+            } 
+            else 
+            {
+                // nothing
             }
         }
 
