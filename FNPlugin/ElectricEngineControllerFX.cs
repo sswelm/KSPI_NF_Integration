@@ -106,7 +106,7 @@ namespace FNPlugin
             String[] resources_to_supply = { FNResourceManager.FNRESOURCE_WASTEHEAT };
             _attached_engine = this.part.Modules["ModuleEnginesFX"] as ModuleEnginesFX;
             this.resources_to_supply = resources_to_supply;
-            _propellants = getPropellants();
+            _propellants = getPropellantsEngineType();
             base.OnStart(state);
 
             if (state == StartState.Editor)
@@ -268,7 +268,7 @@ namespace FNPlugin
         {
             isupgraded = true;
             type = upgradedtype;
-            _propellants = getPropellants();
+            _propellants = getPropellantsEngineType();
             engineTypeStr = upgradedName;
 
             if (!vacplasmaadded && type == (int)ElectricEngineType.VACUUMTHRUSTER)
@@ -285,7 +285,7 @@ namespace FNPlugin
         public override string GetInfo()
         {
             double powerTrustModifier = GetPowerTrustModifier();
-            List<ElectricEnginePropellant> props = getPropellants();
+            List<ElectricEnginePropellant> props = getPropellantsEngineType();
             string return_str = "Max Power Consumption: " + maxPower.ToString("") + " MW\n";
             double thrust_per_mw = (2e6 * powerTrustMultiplier) / g0 / baseISP / 1000.0;
             props.ForEach(prop =>
@@ -366,7 +366,7 @@ namespace FNPlugin
             }
         }
 
-        protected List<ElectricEnginePropellant> getPropellants()
+        protected List<ElectricEnginePropellant> getPropellantsEngineType()
         { // propellants relevent to me
             ConfigNode[] propellantlist = GameDatabase.Instance.GetConfigNodes("ELECTRIC_PROPELLANT");
             List<ElectricEnginePropellant> propellant_list;

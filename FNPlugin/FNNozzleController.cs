@@ -271,10 +271,8 @@ namespace FNPlugin{
 				fuelmode = chosenpropellant.GetValue("guiName");
 				ispMultiplier = float.Parse(chosenpropellant.GetValue("ispMultiplier"));
 				isLFO = bool.Parse(chosenpropellant.GetValue("isLFO"));
-				currentpropellant_is_jet = false;
-				if (chosenpropellant.HasValue("isJet")) 
-					currentpropellant_is_jet = bool.Parse(chosenpropellant.GetValue("isJet"));
 
+                currentpropellant_is_jet = chosenpropellant.HasValue("isJet") ? bool.Parse(chosenpropellant.GetValue("isJet")) : false;
 				//print (currentpropellant_is_jet);
 
 				Propellant curprop = new Propellant();
@@ -313,18 +311,16 @@ namespace FNPlugin{
             { // you can have any fuel you want in the editor but not in flight
                 // should we switch to another propellant because we have none of this one?
                 bool next_propellant = false;
-                List<Propellant> curEngine_propellants_list = new List<Propellant>();
-                curEngine_propellants_list = myAttachedEngine.propellants;
-                foreach (Propellant curEngine_propellant in curEngine_propellants_list) 
+                foreach (Propellant curEngine_propellant in myAttachedEngine.propellants) 
                 {
-                    List<PartResource> partresources = part.GetConnectedResources(curEngine_propellant.name).ToList();
+                    var partresources = part.GetConnectedResources(curEngine_propellant.name);
 
-                    if (partresources.Count == 0 || !PartResourceLibrary.Instance.resourceDefinitions.Contains(list_of_propellants[0].name)) 
+                    if (!partresources.Any()|| !PartResourceLibrary.Instance.resourceDefinitions.Contains(list_of_propellants[0].name)) 
                         next_propellant = true;
                 }
 
                 // do the switch if needed
-                if (next_propellant && fuel_mode != 1) 
+                if (next_propellant && fuel_mode != 1) // always shows the prefered default fuel
                     TogglePropellant();
             } 
             else 
