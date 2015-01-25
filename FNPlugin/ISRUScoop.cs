@@ -147,63 +147,62 @@ namespace FNPlugin
             if (resourceDisplayName != null) 
                 currentresourceStr = resourceDisplayName + "(" + resourcePercentage + "%)";
             
-            resflow = resflowf.ToString("0.0000");
+            resflow = resflowf.ToString("0.000000");
         }
 
         public override void OnFixedUpdate() 
         {
-            if (scoopIsEnabled)
-            {
-                // scoop athmosphere for a single frame
-                ScoopAthmosphere(TimeWarp.fixedDeltaTime, false);
+            if (!scoopIsEnabled) return;
+            
+            // scoop athmosphere for a single frame
+            ScoopAthmosphere(TimeWarp.fixedDeltaTime, false);
 
-                // store current time in case vesel is unloaded
-                last_active_time = (float)Planetarium.GetUniversalTime();
-            }
+            // store current time in case vesel is unloaded
+            last_active_time = (float)Planetarium.GetUniversalTime();
         }
 
         private void ScoopAthmosphere(double deltaTimeInSeconds, bool offlineCollecting)
         {
             string atmospheric_resource_name = ORSAtmosphericResourceHandler.getAtmosphericResourceName(vessel.mainBody.flightGlobalsIndex, currentresource);
 
-            if (atmospheric_resource_name != null)
+            if (atmospheric_resource_name == null)
             {
-                double resourcedensity = PartResourceLibrary.Instance.GetDefinition(atmospheric_resource_name).density;
-                double respcent = ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
-                //double resourcedensity = PartResourceLibrary.Instance.GetDefinition(PluginHelper.atomspheric_resources_tocollect[currentresource]).density;
-                //double respcent = PluginHelper.getAtmosphereResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
-
-                double airdensity = (part.vessel.atmDensity + PluginHelper.MinAtmosphericAirDensity) / 1000.0;
-                double powerrequirements = scoopair / 0.15f * 6f;
-                
-                double airspeed = part.vessel.srf_velocity.magnitude + 40.0;
-                double air = airspeed * airdensity * scoopair / resourcedensity;
-
-                if (respcent > 0 && vessel.altitude <= (PluginHelper.getMaxAtmosphericAltitude(vessel.mainBody) * PluginHelper.MaxAtmosphericAltitudeMult))
-                {
-                    double scoopedAtm = air * respcent;
-
-                    // get power
-                    float powerreceived = Math.Max(consumeFNResource(powerrequirements * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES), 0);
-                    last_power_percentage = offlineCollecting ? last_power_percentage : (float)(powerreceived / powerrequirements / TimeWarp.fixedDeltaTime);
-                    double resourceChange = scoopedAtm * last_power_percentage * deltaTimeInSeconds;
-
-                    if (offlineCollecting)
-                        ScreenMessages.PostScreenMessage("Atmospheric Scoop collected " + resourceChange.ToString("0.0") + " " + atmospheric_resource_name, 60.0f, ScreenMessageStyle.LOWER_CENTER);
-
-                    //resflowf = (float)part.RequestResource(atmospheric_resource_name, -scoopedAtm * powerpcnt * TimeWarp.fixedDeltaTime);
-                    resflowf = (float)ORSHelper.fixedRequestResource(part, atmospheric_resource_name, -resourceChange);
-                    resflowf = -resflowf / TimeWarp.fixedDeltaTime;
-                    
-                }
-                else
-                    resflowf = 0.0f;
-            }
-            else
                 resflowf = 0.0f;
+                return;
+            }
+
+            double resourcedensity = PartResourceLibrary.Instance.GetDefinition(atmospheric_resource_name).density;
+            double respcent = ORSAtmosphericResourceHandler.getAtmosphericResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
+            //double resourcedensity = PartResourceLibrary.Instance.GetDefinition(PluginHelper.atomspheric_resources_tocollect[currentresource]).density;
+            //double respcent = PluginHelper.getAtmosphereResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
+
+            double airdensity = (part.vessel.atmDensity + PluginHelper.MinAtmosphericAirDensity) / 1000.0;
+            double powerrequirements = scoopair / 0.15f * 6f;
+                
+            double airspeed = part.vessel.srf_velocity.magnitude + 40.0;
+            double air = airspeed * airdensity * scoopair / resourcedensity;
+
+            if (respcent == 0 || vessel.altitude > (PluginHelper.getMaxAtmosphericAltitude(vessel.mainBody) * PluginHelper.MaxAtmosphericAltitudeMult))
+            {
+                resflowf = 0.0f;
+                return;
+            }
+
+            double scoopedAtm = air * respcent;
+            float powerreceived = Math.Max(consumeFNResource(powerrequirements * TimeWarp.fixedDeltaTime, FNResourceManager.FNRESOURCE_MEGAJOULES), 0);
+            last_power_percentage = offlineCollecting ? last_power_percentage : (float)(powerreceived / powerrequirements / TimeWarp.fixedDeltaTime);
+            double resourceChange = scoopedAtm * last_power_percentage * deltaTimeInSeconds;
+
+            if (offlineCollecting)
+            {
+                string numberformat = resourceChange > 100 ? "0" : "0.00";
+                ScreenMessages.PostScreenMessage("Atmospheric Scoop collected " + resourceChange.ToString(numberformat) + " " + atmospheric_resource_name, 10.0f, ScreenMessageStyle.LOWER_CENTER);
+            }
+
+            //resflowf = (float)part.RequestResource(atmospheric_resource_name, -scoopedAtm * powerpcnt * TimeWarp.fixedDeltaTime);
+            resflowf = (float)ORSHelper.fixedRequestResource(part, atmospheric_resource_name, -resourceChange);
+            resflowf = -resflowf / TimeWarp.fixedDeltaTime;
         }
-
-
 
         public override string getResourceManagerDisplayName() 
         {
