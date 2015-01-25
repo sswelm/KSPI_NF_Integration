@@ -229,6 +229,14 @@ namespace FNPlugin
                 foreach (ModuleDeployableSolarPanel panel in panels)
                 {
                     float output = panel.flowRate;
+
+                    // attempt to retrieve all solar power output
+                    if (output == 0.0)
+                    {
+                        var solarpanels = panel.part.parent.FindModulesImplementing<ModuleDeployableSolarPanel>();
+                        solarpanels.ForEach(s => output += s.flowRate);
+                    }
+
                     float spower = part.RequestResource("ElectricCharge", output * TimeWarp.fixedDeltaTime);
                     double inv_square_mult = Math.Pow(Vector3d.Distance(FlightGlobals.Bodies[PluginHelper.REF_BODY_KERBIN].transform.position, FlightGlobals.Bodies[PluginHelper.REF_BODY_KERBOL].transform.position), 2) / Math.Pow(Vector3d.Distance(vessel.transform.position, FlightGlobals.Bodies[PluginHelper.REF_BODY_KERBOL].transform.position), 2);
                     displayed_solar_power += spower / TimeWarp.fixedDeltaTime;
