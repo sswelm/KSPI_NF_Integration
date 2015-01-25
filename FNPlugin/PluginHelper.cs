@@ -148,7 +148,7 @@ namespace FNPlugin
         public static float MaxThermalNozzleIsp { get { return _maxThermalNozzleIsp; } }
 
 		private static double _powerConsumptionMultiplier = 1;
-        protected static double PowerConsumptionMultiplier { get { return _powerConsumptionMultiplier; } }
+        public static double PowerConsumptionMultiplier { get { return _powerConsumptionMultiplier; } }
 
 		private static bool _isPanelHeatingClamped = false;
         public static bool IsSolarPanelHeatingClamped { get { return _isPanelHeatingClamped; }}

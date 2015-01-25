@@ -177,7 +177,7 @@ namespace FNPlugin
             //double respcent = PluginHelper.getAtmosphereResourceContent(vessel.mainBody.flightGlobalsIndex, currentresource);
 
             double airdensity = (part.vessel.atmDensity + PluginHelper.MinAtmosphericAirDensity) / 1000.0;
-            double powerrequirements = scoopair / 0.15f * 6f;
+            double powerrequirements = (scoopair / 0.15f) * 6f * (float)PluginHelper.PowerConsumptionMultiplier;
                 
             double airspeed = part.vessel.srf_velocity.magnitude + 40.0;
             double air = airspeed * airdensity * scoopair / resourcedensity;
